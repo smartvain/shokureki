@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,18 +36,36 @@ export default function DashboardPage() {
   const [result, setResult] = useState<CollectResult | null>(null);
   const [pendingCandidates, setPendingCandidates] = useState<Candidate[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [achievementCount, setAchievementCount] = useState<number>(0);
+  const [documentCount, setDocumentCount] = useState<number>(0);
 
-  const fetchCandidates = useCallback(async () => {
+  async function fetchCandidates() {
     const res = await fetch("/api/candidates");
     if (res.ok) {
       const data = await res.json();
       setPendingCandidates(data);
     }
-  }, []);
+  }
+
+  async function fetchStats() {
+    const [achRes, docRes] = await Promise.all([
+      fetch("/api/achievements"),
+      fetch("/api/documents"),
+    ]);
+    if (achRes.ok) {
+      const data = await achRes.json();
+      setAchievementCount(data.length);
+    }
+    if (docRes.ok) {
+      const data = await docRes.json();
+      setDocumentCount(data.length);
+    }
+  }
 
   useEffect(() => {
     fetchCandidates();
-  }, [fetchCandidates]);
+    fetchStats();
+  }, []);
 
   async function handleCollect() {
     setCollecting(true);
@@ -244,7 +262,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">確定済み実績</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">-</p>
+            <p className="text-2xl font-bold">{achievementCount}</p>
             <p className="text-xs text-muted-foreground">合計</p>
           </CardContent>
         </Card>
@@ -253,7 +271,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">生成書類</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">-</p>
+            <p className="text-2xl font-bold">{documentCount}</p>
             <p className="text-xs text-muted-foreground">合計</p>
           </CardContent>
         </Card>
