@@ -138,7 +138,7 @@
 | UI | Tailwind CSS + shadcn/ui | 高速開発 |
 | フォーム | React Hook Form + Zod | バリデーション共有 |
 | AI | Vercel AI SDK + OpenAI GPT-4o-mini | 日本語品質、コスト効率 |
-| PDF | Puppeteer(@sparticuz/chromium) | サーバーレスPDF生成 |
+| PDF | @react-pdf/renderer | Noto Sans JP対応、Vercelサーバーレス互換 |
 | GitHub連携 | @octokit/rest | GitHub REST API |
 | 認証 | NextAuth.js (GitHub OAuth) | 個人アカウント認証 |
 | 日付 | date-fns | 日本語ロケール対応 |
@@ -318,7 +318,7 @@ users (認証ユーザー: NextAuth管理)
 - 依存関係インストール
   - drizzle-orm, @neondatabase/serverless, zod, react-hook-form
   - shadcn/ui, @octokit/rest, ai, @ai-sdk/openai
-  - next-auth, @sparticuz/chromium, puppeteer-core, date-fns
+  - next-auth, @react-pdf/renderer, date-fns
 - Neon DB作成・接続設定
 - Drizzle スキーマ定義・マイグレーション
 - `.env.local`（DATABASE_URL, NEXTAUTH_SECRET, GITHUB_ID/SECRET, OPENAI_API_KEY, ENCRYPTION_KEY）
@@ -343,19 +343,69 @@ users (認証ユーザー: NextAuth管理)
 - ダッシュボードUI（収集ボタン・進捗・実績候補レビュー）
 - 手動エントリーUI
 
-### Step 5: 実績管理
-- 候補の承認→achievements確定フロー
-- 実績一覧・編集・フィルタ
-- プロジェクト管理（実績のグルーピング）
+### Step 5: 実績管理 ✅
+- 候補の承認→achievements確定フロー（Step 4 で実装済み）
+- プロジェクト管理（CRUD + 実績数カウント付き一覧）
+  - API: `GET/POST /api/projects`, `PATCH/DELETE /api/projects/[id]`
+  - ページ: `/projects` — カード一覧・Dialog作成/編集・AlertDialog削除確認
+- 実績管理（CRUD + カテゴリ/期間/プロジェクトフィルタ）
+  - API: `GET/POST /api/achievements`, `PATCH/DELETE /api/achievements/[id]`
+  - ページ: `/achievements` — フィルタバー・カード一覧・Dialog作成/編集・AlertDialog削除確認
+  - technologies はカンマ区切りテキスト入力 → split で配列化
+- Zod バリデーション: `src/lib/validations/achievement.ts`, `project.ts`
+- フォームコンポーネント: `ProjectFormDialog`, `AchievementFormDialog`
 
-### Step 6: プロフィール・職務経歴管理
-- プロフィールCRUD（個人情報・学歴・資格・スキル）
-- 職務経歴CRUD（企業・期間・役職）
+### Step 6: プロフィール・職務経歴管理 ✅
+- プロフィール（upsert パターン）
+  - API: `GET/PUT /api/profile`
+  - ページ: `/profile` — Tabs コンポーネント（基本情報・学歴・資格・スキル）
+  - 基本情報: 姓名、フリガナ、生年月日、性別、メール、電話、郵便番号、住所、自己紹介、職務要約
+- 学歴（CRUD）
+  - API: `GET/POST/DELETE /api/profile/educations`
+  - フィールド: 学校名、学部、学位、入学年月、卒業年月、状態（卒業/在学中/中退/卒業見込）
+- 資格（CRUD）
+  - API: `GET/POST/DELETE /api/profile/certifications`
+  - フィールド: 資格名、発行機関、取得日
+- スキル（CRUD + カテゴリ別グループ表示）
+  - API: `GET/POST/DELETE /api/profile/skills`
+  - フィールド: カテゴリ（言語/FW/ツール/DB/インフラ/その他）、名前、レベル、経験年数
+- 職務経歴（CRUD）
+  - API: `GET/POST /api/work-history`, `PATCH/DELETE /api/work-history/[id]`
+  - ページ: `/work-history` — カード一覧・Dialog作成/編集・AlertDialog削除確認
+  - isCurrent は Switch コンポーネント（ON で endDate 無効化）
+  - employmentType: 正社員/契約社員/派遣社員/業務委託/パート・アルバイト/インターン
+- 共通ヘルパー: `getOrCreateProfileId()` — プロフィール自動作成
+- Zod バリデーション: `src/lib/validations/profile.ts`, `work-history.ts`
+- フォームコンポーネント: `EducationFormDialog`, `CertificationFormDialog`, `SkillFormDialog`, `WorkHistoryFormDialog`
 
-### Step 7: 職務経歴書生成・PDF出力
-- 生成ウィザードUI（フォーマット選択→実績選択→AI生成→編集→PDF）
-- 職務経歴書生成プロンプト
-- Puppeteer PDF生成（@sparticuz/chromium でサーバーレス対応）
+### Step 7: 職務経歴書生成・PDF出力 ✅
+- PDF 生成方式: `@react-pdf/renderer`（Noto Sans JP フォント登録で日本語対応）
+  - Puppeteer はバイナリサイズ（~50MB）が Vercel 制限に抵触するため不採用
+  - `renderToBuffer()` でサーバーサイド PDF 生成（~5MB、バイナリ不要）
+- AI 職務経歴書生成サービス
+  - `src/services/resume/prompts.ts` — フォーマット別プロンプト（逆編年体/編年体/キャリア別）
+  - `src/services/resume/generator.ts` — GPT-4o-mini で構造化 JSON（ShokumukeirekishoContent）生成
+  - 応募先企業/ポジション指定時はそれに合わせた強調
+- PDF テンプレート: `src/services/resume/templates/shokumukeirekisho-pdf.tsx`
+  - A4、Noto Sans JP、セクション: 職務要約 → スキル → 職務経歴 → 自己PR
+- API:
+  - `GET /api/documents` — 書類一覧
+  - `GET/PATCH/DELETE /api/documents/[id]` — 書類 CRUD
+  - `POST /api/documents/generate` — AI 職務経歴書生成
+  - `POST /api/documents/[id]/pdf` — PDF 生成・ダウンロード
+- ページ:
+  - `/documents` — 書類一覧（フォーマット/ステータス Badge、PDF 出力、削除）
+  - `/documents/generate/shokumukeirekisho` — 5ステップ生成ウィザード
+    1. フォーマット選択（逆編年体推奨/編年体/キャリア別）
+    2. 実績選択（Checkbox + 全選択/全解除 + カテゴリフィルタ）
+    3. AI生成（応募先企業/ポジション入力 → ローディング）
+    4. プレビュー・編集（構造化プレビュー + セクション別インライン編集）
+    5. 保存（下書き保存 or 確定保存）
+  - `/documents/[id]` — 書類詳細（コンテンツ表示・PDF 出力・確定・削除）
+- ダッシュボード Stats カードに実績数・書類数を反映
+- Zod バリデーション: `src/lib/validations/document.ts`
+- 型定義: `src/types/document.ts`（ShokumukeirekishoContent インターフェース）
+- コンポーネント: `WizardStepper`
 
 ### Step 8: デプロイ・仕上げ
 - Vercelデプロイ設定
@@ -373,12 +423,22 @@ users (認証ユーザー: NextAuth管理)
 | `src/app/api/auth/[...nextauth]/route.ts` | NextAuth認証 |
 | `src/services/collectors/github.ts` | GitHub活動収集 |
 | `src/services/ai/openai.ts` | AI要約・実績生成（一般化処理含む） |
-| `src/services/ai/prompts.ts` | プロンプトテンプレート |
-| `src/services/resume/generator.ts` | 職務経歴書生成・PDF出力 |
+| `src/services/ai/prompts.ts` | プロンプトテンプレート（活動収集用） |
+| `src/services/resume/prompts.ts` | 職務経歴書生成プロンプト |
+| `src/services/resume/generator.ts` | AI職務経歴書生成（構造化JSON出力） |
+| `src/services/resume/templates/shokumukeirekisho-pdf.tsx` | PDFテンプレート（@react-pdf/renderer） |
 | `src/lib/crypto.ts` | トークン暗号化・復号 |
-| `src/app/page.tsx` | ダッシュボード（収集・レビューUI） |
+| `src/lib/auth-helpers.ts` | 認証ヘルパー（getAuthenticatedUserId, getOrCreateProfileId） |
+| `src/lib/validations/` | Zodバリデーションスキーマ（achievement, project, profile, work-history, document） |
+| `src/types/document.ts` | ShokumukeirekishoContent 型定義 |
+| `src/app/(authenticated)/page.tsx` | ダッシュボード（収集・レビューUI・Stats） |
 | `src/app/api/collect/route.ts` | 活動収集API |
-| `src/app/api/summarize/route.ts` | AI要約API |
+| `src/app/api/projects/` | プロジェクトCRUD API |
+| `src/app/api/achievements/` | 実績CRUD API（フィルタ対応） |
+| `src/app/api/profile/` | プロフィール・学歴・資格・スキル API |
+| `src/app/api/work-history/` | 職務経歴CRUD API |
+| `src/app/api/documents/` | 書類一覧・CRUD・AI生成・PDF出力 API |
+| `public/fonts/NotoSansJP-Regular.ttf` | PDF用日本語フォント |
 
 ---
 
