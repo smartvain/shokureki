@@ -28,6 +28,7 @@ import {
 import { EducationFormDialog } from "@/components/profile/education-form-dialog";
 import { CertificationFormDialog } from "@/components/profile/certification-form-dialog";
 import { SkillFormDialog } from "@/components/profile/skill-form-dialog";
+import { toast } from "sonner";
 
 interface Education {
   id: string;
@@ -141,12 +142,22 @@ export default function ProfilePage() {
 
   async function onSubmitProfile(values: ProfileFormValues) {
     setSaving(true);
-    await fetch("/api/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    setSaving(false);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      if (res.ok) {
+        toast.success("プロフィールを保存しました");
+      } else {
+        toast.error("保存に失敗しました");
+      }
+    } catch {
+      toast.error("保存に失敗しました");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function deleteItem(endpoint: string, id: string, refresh: () => void) {
