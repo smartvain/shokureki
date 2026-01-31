@@ -97,6 +97,49 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Usage
+
+### 1. Initial Setup
+
+After logging in with GitHub, go to **Settings** and connect your GitHub account by entering a [Personal Access Token](https://github.com/settings/tokens). This allows the app to fetch your work activities.
+
+### 2. Register Your Background
+
+Set up your base information before collecting activities:
+
+- **Profile** — Enter basic info (name, contact), education, certifications, and skills
+- **Work History** — Add your employment records (company, position, period, responsibilities)
+- **Projects** — Register projects you've worked on (company, role, team size, tech stack)
+
+### 3. Daily: Collect Activities
+
+On the **Dashboard**, click **"Collect Activities"**. The app fetches your recent GitHub activities (PRs, commits, reviews, issues) and sends them to AI. The AI generates generalized achievement summaries — raw GitHub data is never stored.
+
+You can also use **Manual Entry** to paste meeting notes or Slack messages for AI processing.
+
+### 4. Manage Achievements
+
+Go to **Achievements** to review, edit, or organize AI-generated entries. You can:
+
+- Link achievements to projects
+- Assign categories (development, review, design, etc.)
+- Add technology tags
+- Filter by category, period, or project
+
+### 5. Generate Resume
+
+Go to **Documents** → **"Generate Resume"** to start the 5-step wizard:
+
+1. **Format** — Choose chronological (reverse), chronological, or career-based
+2. **Achievements** — Select which achievements to include
+3. **AI Generation** — Optionally specify a target company/position for tailored output
+4. **Preview & Edit** — Review and adjust the generated content
+5. **Save** — Save as draft or finalize
+
+### 6. Export PDF
+
+Open a saved document and click **"Export PDF"** to download a formatted Japanese resume (職務経歴書) with proper typography.
+
 ## Project Structure
 
 ```
