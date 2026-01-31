@@ -28,6 +28,7 @@ import {
 import { EducationFormDialog } from "@/components/profile/education-form-dialog";
 import { CertificationFormDialog } from "@/components/profile/certification-form-dialog";
 import { SkillFormDialog } from "@/components/profile/skill-form-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
 interface Education {
@@ -70,6 +71,7 @@ const levelLabels: Record<string, string> = {
 };
 
 export default function ProfilePage() {
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [educations, setEducations] = useState<Education[]>([]);
   const [certifications, setCertifications] = useState<Certification[]>([]);
@@ -115,7 +117,8 @@ export default function ProfilePage() {
           selfIntroduction: data.selfIntroduction || "",
           summary: data.summary || "",
         });
-      });
+      })
+      .finally(() => setLoading(false));
   }, [form]);
 
   async function fetchEducations() {
@@ -175,6 +178,27 @@ export default function ProfilePage() {
     acc[skill.category].push(skill);
     return acc;
   }, {});
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold">プロフィール</h1>
+          <p className="text-muted-foreground">個人情報・学歴・資格・スキルを管理します</p>
+        </div>
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
