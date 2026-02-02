@@ -6,29 +6,35 @@ describe("workHistoryFormSchema", () => {
     startDate: "2023-04",
   };
 
-  it("accepts valid minimal data", () => {
-    expect(workHistoryFormSchema.safeParse(validData).success).toBe(true);
+  describe("when given valid data", () => {
+    it("should accept minimal required fields", () => {
+      expect(workHistoryFormSchema.safeParse(validData).success).toBe(true);
+    });
+
+    it("should accept an empty endDate", () => {
+      expect(workHistoryFormSchema.safeParse({ ...validData, endDate: "" }).success).toBe(true);
+    });
+
+    it("should accept the isCurrent flag", () => {
+      expect(workHistoryFormSchema.safeParse({ ...validData, isCurrent: true }).success).toBe(true);
+    });
   });
 
-  it("rejects empty company name", () => {
-    expect(workHistoryFormSchema.safeParse({ ...validData, companyName: "" }).success).toBe(false);
-  });
+  describe("when given invalid data", () => {
+    it("should reject an empty company name", () => {
+      expect(workHistoryFormSchema.safeParse({ ...validData, companyName: "" }).success).toBe(
+        false
+      );
+    });
 
-  it("rejects invalid startDate format", () => {
-    expect(workHistoryFormSchema.safeParse({ ...validData, startDate: "2023/04" }).success).toBe(
-      false
-    );
-  });
+    it("should reject an invalid startDate format", () => {
+      expect(workHistoryFormSchema.safeParse({ ...validData, startDate: "2023/04" }).success).toBe(
+        false
+      );
+    });
 
-  it("rejects empty startDate", () => {
-    expect(workHistoryFormSchema.safeParse({ ...validData, startDate: "" }).success).toBe(false);
-  });
-
-  it("accepts empty endDate", () => {
-    expect(workHistoryFormSchema.safeParse({ ...validData, endDate: "" }).success).toBe(true);
-  });
-
-  it("accepts isCurrent flag", () => {
-    expect(workHistoryFormSchema.safeParse({ ...validData, isCurrent: true }).success).toBe(true);
+    it("should reject an empty startDate", () => {
+      expect(workHistoryFormSchema.safeParse({ ...validData, startDate: "" }).success).toBe(false);
+    });
   });
 });

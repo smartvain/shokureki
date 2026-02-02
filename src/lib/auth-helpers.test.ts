@@ -31,53 +31,67 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 
 describe("getAuthenticatedUserId", () => {
-  it("returns user id when session exists", async () => {
-    (auth as Mock).mockResolvedValue({ user: { id: "user-123" } });
-    expect(await getAuthenticatedUserId()).toBe("user-123");
+  describe("when session exists with a valid user", () => {
+    it("should return the user id", async () => {
+      (auth as Mock).mockResolvedValue({ user: { id: "user-123" } });
+      expect(await getAuthenticatedUserId()).toBe("user-123");
+    });
   });
 
-  it("returns null when session is null", async () => {
-    (auth as Mock).mockResolvedValue(null);
-    expect(await getAuthenticatedUserId()).toBeNull();
+  describe("when session is null", () => {
+    it("should return null", async () => {
+      (auth as Mock).mockResolvedValue(null);
+      expect(await getAuthenticatedUserId()).toBeNull();
+    });
   });
 
-  it("returns null when session has no user", async () => {
-    (auth as Mock).mockResolvedValue({});
-    expect(await getAuthenticatedUserId()).toBeNull();
+  describe("when session has no user", () => {
+    it("should return null", async () => {
+      (auth as Mock).mockResolvedValue({});
+      expect(await getAuthenticatedUserId()).toBeNull();
+    });
   });
 
-  it("returns null when user has no id", async () => {
-    (auth as Mock).mockResolvedValue({ user: {} });
-    expect(await getAuthenticatedUserId()).toBeNull();
+  describe("when user has no id", () => {
+    it("should return null", async () => {
+      (auth as Mock).mockResolvedValue({ user: {} });
+      expect(await getAuthenticatedUserId()).toBeNull();
+    });
   });
 });
 
 describe("unauthorizedResponse", () => {
-  it("returns 401 status", () => {
-    const response = unauthorizedResponse();
-    expect(response.status).toBe(401);
-  });
+  describe("when called", () => {
+    it("should return 401 status", () => {
+      const response = unauthorizedResponse();
+      expect(response.status).toBe(401);
+    });
 
-  it("returns error message in JSON", async () => {
-    const response = unauthorizedResponse();
-    const body = await response.json();
-    expect(body.error).toBe("認証が必要です");
+    it("should return error message in JSON body", async () => {
+      const response = unauthorizedResponse();
+      const body = await response.json();
+      expect(body.error).toBe("認証が必要です");
+    });
   });
 });
 
 describe("getOrCreateProfileId", () => {
-  it("returns existing profile id", async () => {
-    (db.query.profiles.findFirst as Mock).mockResolvedValue({ id: "profile-123" });
-    expect(await getOrCreateProfileId("user-123")).toBe("profile-123");
+  describe("when a profile already exists", () => {
+    it("should return the existing profile id", async () => {
+      (db.query.profiles.findFirst as Mock).mockResolvedValue({ id: "profile-123" });
+      expect(await getOrCreateProfileId("user-123")).toBe("profile-123");
+    });
   });
 
-  it("creates and returns new profile id when not found", async () => {
-    (db.query.profiles.findFirst as Mock).mockResolvedValue(undefined);
+  describe("when no profile exists", () => {
+    it("should create a new profile and return its id", async () => {
+      (db.query.profiles.findFirst as Mock).mockResolvedValue(undefined);
 
-    const returningMock = vi.fn().mockResolvedValue([{ id: "new-profile-456" }]);
-    const valuesMock = vi.fn().mockReturnValue({ returning: returningMock });
-    (db.insert as Mock).mockReturnValue({ values: valuesMock });
+      const returningMock = vi.fn().mockResolvedValue([{ id: "new-profile-456" }]);
+      const valuesMock = vi.fn().mockReturnValue({ returning: returningMock });
+      (db.insert as Mock).mockReturnValue({ values: valuesMock });
 
-    expect(await getOrCreateProfileId("user-123")).toBe("new-profile-456");
+      expect(await getOrCreateProfileId("user-123")).toBe("new-profile-456");
+    });
   });
 });

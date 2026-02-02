@@ -35,11 +35,13 @@ vi.mock("@/db/schema", () => ({
 }));
 
 describe("auth config", () => {
-  it("exports auth, handlers, signIn, signOut", async () => {
-    const authModule = await import("./auth");
-    expect(authModule).toHaveProperty("auth");
-    expect(authModule).toHaveProperty("handlers");
-    expect(authModule).toHaveProperty("signIn");
-    expect(authModule).toHaveProperty("signOut");
+  describe("when imported", () => {
+    it("should export auth, handlers, signIn, and signOut", async () => {
+      const authModule = await import("./auth");
+      expect(authModule).toHaveProperty("auth");
+      expect(authModule).toHaveProperty("handlers");
+      expect(authModule).toHaveProperty("signIn");
+      expect(authModule).toHaveProperty("signOut");
+    });
   });
 });
