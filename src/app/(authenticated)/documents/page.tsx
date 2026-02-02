@@ -86,7 +86,7 @@ export default function DocumentsPage() {
 
       {documents.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
+          <CardContent className="text-muted-foreground py-12 text-center">
             書類がまだありません。「新規作成」から職務経歴書を生成できます。
           </CardContent>
         </Card>
@@ -94,26 +94,20 @@ export default function DocumentsPage() {
         <div className="space-y-4">
           {documents.map((doc) => (
             <Card key={doc.id}>
-              <CardContent className="pt-6 space-y-3">
+              <CardContent className="space-y-3 pt-6">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
                     <h3 className="font-medium">{doc.title}</h3>
-                    <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
                       {doc.targetCompany && <span>{doc.targetCompany}</span>}
                       {doc.targetPosition && <span>{doc.targetPosition}</span>}
                       <span>v{doc.version}</span>
-                      <span>
-                        {new Date(doc.updatedAt).toLocaleDateString("ja-JP")}
-                      </span>
+                      <span>{new Date(doc.updatedAt).toLocaleDateString("ja-JP")}</span>
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <Badge variant="outline">
-                      {formatLabels[doc.format] || doc.format}
-                    </Badge>
-                    <Badge
-                      variant={doc.status === "finalized" ? "default" : "secondary"}
-                    >
+                    <Badge variant="outline">{formatLabels[doc.format] || doc.format}</Badge>
+                    <Badge variant={doc.status === "finalized" ? "default" : "secondary"}>
                       {statusLabels[doc.status] || doc.status}
                     </Badge>
                   </div>
@@ -123,11 +117,7 @@ export default function DocumentsPage() {
                   <Button size="sm" variant="outline" asChild>
                     <Link href={`/documents/${doc.id}`}>閲覧</Link>
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleDownloadPdf(doc.id)}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => handleDownloadPdf(doc.id)}>
                     PDF出力
                   </Button>
                   <AlertDialog>
@@ -138,12 +128,8 @@ export default function DocumentsPage() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          書類を削除しますか？
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          この操作は取り消せません。
-                        </AlertDialogDescription>
+                        <AlertDialogTitle>書類を削除しますか？</AlertDialogTitle>
+                        <AlertDialogDescription>この操作は取り消せません。</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>キャンセル</AlertDialogCancel>

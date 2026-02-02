@@ -11,10 +11,7 @@ export async function POST() {
   if (!userId) return unauthorizedResponse();
 
   const connection = await db.query.serviceConnections.findFirst({
-    where: and(
-      eq(serviceConnections.userId, userId),
-      eq(serviceConnections.service, "github")
-    ),
+    where: and(eq(serviceConnections.userId, userId), eq(serviceConnections.service, "github")),
   });
 
   if (!connection) {

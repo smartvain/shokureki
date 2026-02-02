@@ -1,6 +1,7 @@
 # 職務経歴書・履歴書管理アプリ「shokureki」実装計画
 
 ## 概要
+
 業務ツール（GitHub等）から日々の活動を自動収集し、AIが実績候補を生成。蓄積した実績から職務経歴書を自動生成するWebアプリケーション。
 
 **コンセプト:** 「記録を意識しない」→ 業務終わりにワンクリックで活動を収集 → AIが実績化
@@ -130,19 +131,19 @@
 
 ## 技術スタック
 
-| レイヤー | 技術 | 理由 |
-|---------|------|------|
-| フレームワーク | Next.js (App Router) | Vercel最適、Server Components |
-| 言語 | TypeScript | 型安全性 |
-| DB | PostgreSQL (Neon) + Drizzle ORM | Vercelサーバーレス対応、無料枠あり |
-| UI | Tailwind CSS + shadcn/ui | 高速開発 |
-| フォーム | React Hook Form + Zod | バリデーション共有 |
-| AI | Vercel AI SDK + OpenAI GPT-4o-mini | 日本語品質、コスト効率 |
-| PDF | @react-pdf/renderer | Noto Sans JP対応、Vercelサーバーレス互換 |
-| GitHub連携 | @octokit/rest | GitHub REST API |
-| 認証 | NextAuth.js (GitHub OAuth) | 個人アカウント認証 |
-| 日付 | date-fns | 日本語ロケール対応 |
-| ホスティング | Vercel | Next.js最適、無料枠 |
+| レイヤー       | 技術                               | 理由                                     |
+| -------------- | ---------------------------------- | ---------------------------------------- |
+| フレームワーク | Next.js (App Router)               | Vercel最適、Server Components            |
+| 言語           | TypeScript                         | 型安全性                                 |
+| DB             | PostgreSQL (Neon) + Drizzle ORM    | Vercelサーバーレス対応、無料枠あり       |
+| UI             | Tailwind CSS + shadcn/ui           | 高速開発                                 |
+| フォーム       | React Hook Form + Zod              | バリデーション共有                       |
+| AI             | Vercel AI SDK + OpenAI GPT-4o-mini | 日本語品質、コスト効率                   |
+| PDF            | @react-pdf/renderer                | Noto Sans JP対応、Vercelサーバーレス互換 |
+| GitHub連携     | @octokit/rest                      | GitHub REST API                          |
+| 認証           | NextAuth.js (GitHub OAuth)         | 個人アカウント認証                       |
+| 日付           | date-fns                           | 日本語ロケール対応                       |
+| ホスティング   | Vercel                             | Next.js最適、無料枠                      |
 
 ---
 
@@ -197,16 +198,19 @@ users (認証ユーザー: NextAuth管理)
 ### 主要テーブル
 
 **serviceConnections** - 外部サービス接続
+
 - service: "github" | "jira" | "linear"
 - encryptedConfig: 暗号化されたJSON（トークン、対象リポジトリ等）
 - status: "active" | "inactive" | "error"
 
 **dailyDigests** - 日次ダイジェスト
+
 - date: YYYY-MM-DD（1日1レコード）
 - summaryText: AI生成の日次サマリー（一般化済み）
 - status: "collecting" | "summarizing" | "ready" | "reviewed"
 
 **achievementCandidates** - AI生成の実績候補
+
 - digestId: 日次ダイジェストへのFK
 - title, description（職務経歴書記載形式・一般化済み）
 - category: "development" | "review" | "bugfix" | "design" 等
@@ -215,6 +219,7 @@ users (認証ユーザー: NextAuth管理)
 - status: "pending" | "accepted" | "rejected" | "edited"
 
 **achievements** - 確定した実績
+
 - candidateId: 元の候補へのFK（手動作成はnull）
 - title, description, category, technologies
 - projectId: プロジェクトへのFK
@@ -228,33 +233,37 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 #### テーブル分割の理由
 
 **`dailyDigests` → `achievementCandidates` → `achievements` の3段階構造**
+
 - `dailyDigests`: 「いつ収集したか」を日単位で管理。1日1レコード（userId+dateのユニーク制約）で重複収集を防止。
 - `achievementCandidates`: AIが生成した実績候補。ユーザーが承認/却下するワークフローがあるため、確定実績とは別テーブルで管理。候補はダイジェストにカスケード削除で紐づく使い捨てデータ。
 - `achievements`: ユーザーが承認した確定実績。長期保存対象。`candidateId`はnullable（手動作成の実績にも対応するため）。
 
 **`profiles` 配下に `educations` / `certifications` / `skills` / `workHistories` をぶら下げる構造**
+
 - 職務経歴書のセクション構成（個人情報・学歴・資格・スキル・職歴）にそのまま対応。
 - `profiles.userId` にUNIQUE制約を設定し、1ユーザー1プロフィールを保証。
 - 子テーブルは全てcascade deleteで、プロフィール削除時に一括クリーンアップ。
 
 **`generatedDocuments` が `profiles` ではなく `userId` 直下**
+
 - 書類はプロフィールとは異なるライフサイクルを持つ（プロフィール更新と書類更新は独立）。
 - 複数書類を応募先企業・ポジション別に管理する必要があり、プロフィールに依存させると不自然。
 
 **`serviceConnections` の暗号化設計**
+
 - GitHubトークンを含む接続設定をJSON全体でAES-256-GCM暗号化してDB保存。
 - 暗号化キーはVercel環境変数で管理し、DB漏洩時もトークンが平文で露出しない。
 - `service`カラムで複数サービス（github/jira/linear）を1テーブルで管理し、将来の拡張に対応。
 
 #### リレーション設計の理由
 
-| リレーション | 削除時の挙動 | 理由 |
-|-------------|-------------|------|
-| `achievements.projectId` → `projects` | `SET NULL` | プロジェクトを削除しても実績は残すべき |
-| `achievements.candidateId` → `achievementCandidates` | デフォルト（制約なし） | 候補が削除されても確定実績には影響しない |
-| `educations.profileId` → `profiles` | `CASCADE` | プロフィール削除時に子データも一括削除 |
-| `dailyDigests.userId` → `users` | `CASCADE` | ユーザー削除時に関連データを全て削除 |
-| `accounts`/`sessions` → `users` | `CASCADE` | NextAuth管理のため、ユーザー削除で自動クリーンアップ |
+| リレーション                                         | 削除時の挙動           | 理由                                                 |
+| ---------------------------------------------------- | ---------------------- | ---------------------------------------------------- |
+| `achievements.projectId` → `projects`                | `SET NULL`             | プロジェクトを削除しても実績は残すべき               |
+| `achievements.candidateId` → `achievementCandidates` | デフォルト（制約なし） | 候補が削除されても確定実績には影響しない             |
+| `educations.profileId` → `profiles`                  | `CASCADE`              | プロフィール削除時に子データも一括削除               |
+| `dailyDigests.userId` → `users`                      | `CASCADE`              | ユーザー削除時に関連データを全て削除                 |
+| `accounts`/`sessions` → `users`                      | `CASCADE`              | NextAuth管理のため、ユーザー削除で自動クリーンアップ |
 
 ---
 
@@ -266,12 +275,12 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 
 ### GitHub収集データ（MVP）
 
-| データ | API | メモリ上で処理 → AI要約 |
-|--------|-----|----------------------|
-| マージしたPR | `GET /repos/{owner}/{repo}/pulls` | タイトル・説明 → 実績化 |
-| レビューしたPR | `GET /repos/{owner}/{repo}/pulls/{n}/reviews` | レビュー件数 → 実績化 |
-| コミット | `GET /repos/{owner}/{repo}/commits` | 補完情報として使用 |
-| クローズしたIssue | `GET /repos/{owner}/{repo}/issues` | バグ修正等 → 実績化 |
+| データ            | API                                           | メモリ上で処理 → AI要約 |
+| ----------------- | --------------------------------------------- | ----------------------- |
+| マージしたPR      | `GET /repos/{owner}/{repo}/pulls`             | タイトル・説明 → 実績化 |
+| レビューしたPR    | `GET /repos/{owner}/{repo}/pulls/{n}/reviews` | レビュー件数 → 実績化   |
+| コミット          | `GET /repos/{owner}/{repo}/commits`           | 補完情報として使用      |
+| クローズしたIssue | `GET /repos/{owner}/{repo}/issues`            | バグ修正等 → 実績化     |
 
 ### AI要約プロンプト（概要）
 
@@ -305,24 +314,25 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 
 ## ページ構成
 
-| パス | 機能 |
-|------|------|
-| `/` | ダッシュボード（収集ボタン・サマリー・実績候補レビュー） |
-| `/achievements` | 確定済み実績一覧（フィルタ・検索・編集） |
-| `/projects` | プロジェクト管理（実績のグルーピング） |
-| `/profile` | プロフィール編集（個人情報・学歴・資格・スキル） |
-| `/work-history` | 職務経歴一覧・編集 |
-| `/documents` | 生成書類一覧 |
-| `/documents/generate/shokumukeirekisho` | 職務経歴書生成ウィザード |
-| `/documents/[id]` | 書類編集・プレビュー |
-| `/settings` | 外部サービス接続設定 |
-| `/api/auth/*` | NextAuth認証エンドポイント |
+| パス                                    | 機能                                                     |
+| --------------------------------------- | -------------------------------------------------------- |
+| `/`                                     | ダッシュボード（収集ボタン・サマリー・実績候補レビュー） |
+| `/achievements`                         | 確定済み実績一覧（フィルタ・検索・編集）                 |
+| `/projects`                             | プロジェクト管理（実績のグルーピング）                   |
+| `/profile`                              | プロフィール編集（個人情報・学歴・資格・スキル）         |
+| `/work-history`                         | 職務経歴一覧・編集                                       |
+| `/documents`                            | 生成書類一覧                                             |
+| `/documents/generate/shokumukeirekisho` | 職務経歴書生成ウィザード                                 |
+| `/documents/[id]`                       | 書類編集・プレビュー                                     |
+| `/settings`                             | 外部サービス接続設定                                     |
+| `/api/auth/*`                           | NextAuth認証エンドポイント                               |
 
 ---
 
 ## MVP機能スコープ
 
 **Phase 1 (MVP):**
+
 - 認証（GitHub OAuth）
 - GitHub連携（PR・コミット・レビュー・Issue収集）
 - 手動エントリー
@@ -335,6 +345,7 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 - Vercelデプロイ
 
 **Phase 2:**
+
 - Jira/Linear連携
 - 週次ダイジェスト
 - 実績の重複検出
@@ -342,6 +353,7 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 - 書類バージョン管理
 
 **Phase 3:**
+
 - ローカルLLM対応（Ollama）
 - データエクスポート（JSON）
 - ダークモード
@@ -351,6 +363,7 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 ## 実装ステップ
 
 ### Step 1: プロジェクト初期化
+
 - `create-next-app` でプロジェクト作成
 - 依存関係インストール
   - drizzle-orm, @neondatabase/serverless, zod, react-hook-form
@@ -362,18 +375,21 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 - git init → 個人GitHubにpush
 
 ### Step 2: 認証・レイアウト
+
 - NextAuth.js設定（GitHub OAuthプロバイダー）
 - ログイン/ログアウトフロー
 - サイドバーナビゲーション（Noto Sans JP）
 - 認証ガード（全ページ保護）
 
 ### Step 3: 設定画面・GitHub接続
+
 - 設定画面UI（GitHubトークン入力、リポジトリ選択）
 - トークン暗号化・DB保存
 - GitHub接続テスト機能
 - serviceConnectionsのCRUD
 
 ### Step 4: 活動収集・AI処理（コア）
+
 - GitHubコレクターサービス（@octokit/rest）
 - 収集API（POST /api/collect）→ メモリ上で生データ取得
 - AI要約API（POST /api/summarize）→ 一般化済み実績候補のみDB保存
@@ -381,6 +397,7 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 - 手動エントリーUI
 
 ### Step 5: 実績管理 ✅
+
 - 候補の承認→achievements確定フロー（Step 4 で実装済み）
 - プロジェクト管理（CRUD + 実績数カウント付き一覧）
   - API: `GET/POST /api/projects`, `PATCH/DELETE /api/projects/[id]`
@@ -393,6 +410,7 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 - フォームコンポーネント: `ProjectFormDialog`, `AchievementFormDialog`
 
 ### Step 6: プロフィール・職務経歴管理 ✅
+
 - プロフィール（upsert パターン）
   - API: `GET/PUT /api/profile`
   - ページ: `/profile` — Tabs コンポーネント（基本情報・学歴・資格・スキル）
@@ -416,6 +434,7 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 - フォームコンポーネント: `EducationFormDialog`, `CertificationFormDialog`, `SkillFormDialog`, `WorkHistoryFormDialog`
 
 ### Step 7: 職務経歴書生成・PDF出力 ✅
+
 - PDF 生成方式: `@react-pdf/renderer`（Noto Sans JP フォント登録で日本語対応）
   - Puppeteer はバイナリサイズ（~50MB）が Vercel 制限に抵触するため不採用
   - `renderToBuffer()` でサーバーサイド PDF 生成（~5MB、バイナリ不要）
@@ -445,6 +464,7 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 - コンポーネント: `WizardStepper`
 
 ### Step 8: デプロイ・仕上げ
+
 - Vercelデプロイ設定
 - 本番環境変数設定
 - エラーハンドリング・ローディング状態
@@ -454,32 +474,33 @@ GitHubの生データ（PRタイトル、コミットメッセージ等）はク
 
 ## 主要ファイル
 
-| ファイル | 役割 |
-|---------|------|
-| `src/db/schema.ts` | 全テーブル定義（Drizzle + Neon） |
-| `src/app/api/auth/[...nextauth]/route.ts` | NextAuth認証 |
-| `src/services/collectors/github.ts` | GitHub活動収集 |
-| `src/services/ai/openai.ts` | AI要約・実績生成（一般化処理含む） |
-| `src/services/ai/prompts.ts` | プロンプトテンプレート（活動収集用） |
-| `src/services/resume/prompts.ts` | 職務経歴書生成プロンプト |
-| `src/services/resume/generator.ts` | AI職務経歴書生成（構造化JSON出力） |
-| `src/services/resume/templates/shokumukeirekisho-pdf.tsx` | PDFテンプレート（@react-pdf/renderer） |
-| `src/lib/crypto.ts` | トークン暗号化・復号 |
-| `src/lib/auth-helpers.ts` | 認証ヘルパー（getAuthenticatedUserId, getOrCreateProfileId） |
-| `src/lib/validations/` | Zodバリデーションスキーマ（achievement, project, profile, work-history, document） |
-| `src/types/document.ts` | ShokumukeirekishoContent 型定義 |
-| `src/app/(authenticated)/page.tsx` | ダッシュボード（収集・レビューUI・Stats） |
-| `src/app/api/collect/route.ts` | 活動収集API |
-| `src/app/api/projects/` | プロジェクトCRUD API |
-| `src/app/api/achievements/` | 実績CRUD API（フィルタ対応） |
-| `src/app/api/profile/` | プロフィール・学歴・資格・スキル API |
-| `src/app/api/work-history/` | 職務経歴CRUD API |
-| `src/app/api/documents/` | 書類一覧・CRUD・AI生成・PDF出力 API |
-| `public/fonts/NotoSansJP-Regular.ttf` | PDF用日本語フォント |
+| ファイル                                                  | 役割                                                                               |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `src/db/schema.ts`                                        | 全テーブル定義（Drizzle + Neon）                                                   |
+| `src/app/api/auth/[...nextauth]/route.ts`                 | NextAuth認証                                                                       |
+| `src/services/collectors/github.ts`                       | GitHub活動収集                                                                     |
+| `src/services/ai/openai.ts`                               | AI要約・実績生成（一般化処理含む）                                                 |
+| `src/services/ai/prompts.ts`                              | プロンプトテンプレート（活動収集用）                                               |
+| `src/services/resume/prompts.ts`                          | 職務経歴書生成プロンプト                                                           |
+| `src/services/resume/generator.ts`                        | AI職務経歴書生成（構造化JSON出力）                                                 |
+| `src/services/resume/templates/shokumukeirekisho-pdf.tsx` | PDFテンプレート（@react-pdf/renderer）                                             |
+| `src/lib/crypto.ts`                                       | トークン暗号化・復号                                                               |
+| `src/lib/auth-helpers.ts`                                 | 認証ヘルパー（getAuthenticatedUserId, getOrCreateProfileId）                       |
+| `src/lib/validations/`                                    | Zodバリデーションスキーマ（achievement, project, profile, work-history, document） |
+| `src/types/document.ts`                                   | ShokumukeirekishoContent 型定義                                                    |
+| `src/app/(authenticated)/page.tsx`                        | ダッシュボード（収集・レビューUI・Stats）                                          |
+| `src/app/api/collect/route.ts`                            | 活動収集API                                                                        |
+| `src/app/api/projects/`                                   | プロジェクトCRUD API                                                               |
+| `src/app/api/achievements/`                               | 実績CRUD API（フィルタ対応）                                                       |
+| `src/app/api/profile/`                                    | プロフィール・学歴・資格・スキル API                                               |
+| `src/app/api/work-history/`                               | 職務経歴CRUD API                                                                   |
+| `src/app/api/documents/`                                  | 書類一覧・CRUD・AI生成・PDF出力 API                                                |
+| `public/fonts/NotoSansJP-Regular.ttf`                     | PDF用日本語フォント                                                                |
 
 ---
 
 ## 検証方法
+
 1. Vercelにデプロイ → ブラウザからアクセス → GitHub OAuthログイン確認
 2. GitHubトークン設定 → リポジトリ選択 → 接続テスト成功を確認
 3. 「収集」ボタン → GitHub活動取得 → AI実績候補が生成されることを確認

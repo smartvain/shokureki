@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { educations } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getAuthenticatedUserId, unauthorizedResponse, getOrCreateProfileId } from "@/lib/auth-helpers";
+import {
+  getAuthenticatedUserId,
+  unauthorizedResponse,
+  getOrCreateProfileId,
+} from "@/lib/auth-helpers";
 
 export async function GET() {
   const userId = await getAuthenticatedUserId();
@@ -48,9 +52,7 @@ export async function DELETE(request: Request) {
   const { id } = await request.json();
   const profileId = await getOrCreateProfileId(userId);
 
-  await db
-    .delete(educations)
-    .where(eq(educations.id, id));
+  await db.delete(educations).where(eq(educations.id, id));
 
   // Verify ownership via profileId (educations cascade from profiles which belong to user)
   void profileId;

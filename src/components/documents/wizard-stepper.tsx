@@ -28,21 +28,14 @@ export function WizardStepper({ currentStep, steps }: WizardStepperProps) {
             <span
               className={cn(
                 "text-sm",
-                index <= currentStep
-                  ? "font-medium"
-                  : "text-muted-foreground"
+                index <= currentStep ? "font-medium" : "text-muted-foreground"
               )}
             >
               {step.label}
             </span>
           </div>
           {index < steps.length - 1 && (
-            <div
-              className={cn(
-                "h-px w-8",
-                index < currentStep ? "bg-primary" : "bg-muted"
-              )}
-            />
+            <div className={cn("h-px w-8", index < currentStep ? "bg-primary" : "bg-muted")} />
           )}
         </div>
       ))}

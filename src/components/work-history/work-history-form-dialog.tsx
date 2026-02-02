@@ -3,12 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { workHistoryFormSchema, type WorkHistoryFormValues } from "@/lib/validations/work-history";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -101,11 +96,9 @@ export function WorkHistoryFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "職務経歴を編集" : "職務経歴を追加"}
-          </DialogTitle>
+          <DialogTitle>{isEditing ? "職務経歴を編集" : "職務経歴を追加"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -208,11 +201,7 @@ export function WorkHistoryFormDialog({
                   <FormItem>
                     <FormLabel>終了年月</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="2024-03"
-                        disabled={isCurrent}
-                        {...field}
-                      />
+                      <Input placeholder="2024-03" disabled={isCurrent} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -255,11 +244,7 @@ export function WorkHistoryFormDialog({
                 キャンセル
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting
-                  ? "保存中..."
-                  : isEditing
-                    ? "更新"
-                    : "追加"}
+                {form.formState.isSubmitting ? "保存中..." : isEditing ? "更新" : "追加"}
               </Button>
             </div>
           </form>

@@ -2,16 +2,8 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  achievementFormSchema,
-  type AchievementFormValues,
-} from "@/lib/validations/achievement";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { achievementFormSchema, type AchievementFormValues } from "@/lib/validations/achievement";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -85,9 +77,7 @@ export function AchievementFormDialog({
   });
 
   async function onSubmit(values: AchievementFormValues) {
-    const url = isEditing
-      ? `/api/achievements/${achievement.id}`
-      : "/api/achievements";
+    const url = isEditing ? `/api/achievements/${achievement.id}` : "/api/achievements";
     const method = isEditing ? "PATCH" : "POST";
 
     const res = await fetch(url, {
@@ -107,9 +97,7 @@ export function AchievementFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "実績を編集" : "実績を作成"}
-          </DialogTitle>
+          <DialogTitle>{isEditing ? "実績を編集" : "実績を作成"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -133,11 +121,7 @@ export function AchievementFormDialog({
                 <FormItem>
                   <FormLabel>説明 *</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="職務経歴書に記載する形式で記述..."
-                      rows={3}
-                      {...field}
-                    />
+                    <Textarea placeholder="職務経歴書に記載する形式で記述..." rows={3} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -150,10 +134,7 @@ export function AchievementFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>カテゴリ</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue />
@@ -192,10 +173,7 @@ export function AchievementFormDialog({
                 <FormItem>
                   <FormLabel>技術スタック</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="React, TypeScript, Next.js（カンマ区切り）"
-                      {...field}
-                    />
+                    <Input placeholder="React, TypeScript, Next.js（カンマ区切り）" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -208,9 +186,7 @@ export function AchievementFormDialog({
                 <FormItem>
                   <FormLabel>プロジェクト</FormLabel>
                   <Select
-                    onValueChange={(v) =>
-                      field.onChange(v === "none" ? null : v)
-                    }
+                    onValueChange={(v) => field.onChange(v === "none" ? null : v)}
                     defaultValue={field.value ?? "none"}
                   >
                     <FormControl>
@@ -232,19 +208,11 @@ export function AchievementFormDialog({
               )}
             />
             <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 キャンセル
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting
-                  ? "保存中..."
-                  : isEditing
-                    ? "更新"
-                    : "作成"}
+                {form.formState.isSubmitting ? "保存中..." : isEditing ? "更新" : "作成"}
               </Button>
             </div>
           </form>

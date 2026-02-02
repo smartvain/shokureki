@@ -11,22 +11,20 @@ describe("documentGenerateSchema", () => {
   });
 
   it("rejects empty achievementIds", () => {
-    expect(
-      documentGenerateSchema.safeParse({ ...validData, achievementIds: [] }).success
-    ).toBe(false);
+    expect(documentGenerateSchema.safeParse({ ...validData, achievementIds: [] }).success).toBe(
+      false
+    );
   });
 
   it("rejects invalid format", () => {
-    expect(
-      documentGenerateSchema.safeParse({ ...validData, format: "unknown" }).success
-    ).toBe(false);
+    expect(documentGenerateSchema.safeParse({ ...validData, format: "unknown" }).success).toBe(
+      false
+    );
   });
 
   it("accepts all valid formats", () => {
     for (const format of ["reverse_chronological", "chronological", "career_based"]) {
-      expect(
-        documentGenerateSchema.safeParse({ ...validData, format }).success
-      ).toBe(true);
+      expect(documentGenerateSchema.safeParse({ ...validData, format }).success).toBe(true);
     }
   });
 

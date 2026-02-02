@@ -30,18 +30,18 @@
 
 ## 技術スタック
 
-| レイヤー | 技術 |
-|---------|------|
-| フレームワーク | Next.js 16 (App Router) |
-| 言語 | TypeScript |
-| DB | PostgreSQL ([Neon](https://neon.tech)) + Drizzle ORM |
-| UI | Tailwind CSS 4 + shadcn/ui |
-| フォーム | React Hook Form + Zod |
-| AI | Vercel AI SDK + OpenAI GPT-4o-mini |
-| PDF | @react-pdf/renderer |
-| GitHub連携 | @octokit/rest |
-| 認証 | Auth.js (GitHub OAuth) |
-| ホスティング | Vercel |
+| レイヤー       | 技術                                                 |
+| -------------- | ---------------------------------------------------- |
+| フレームワーク | Next.js 16 (App Router)                              |
+| 言語           | TypeScript                                           |
+| DB             | PostgreSQL ([Neon](https://neon.tech)) + Drizzle ORM |
+| UI             | Tailwind CSS 4 + shadcn/ui                           |
+| フォーム       | React Hook Form + Zod                                |
+| AI             | Vercel AI SDK + OpenAI GPT-4o-mini                   |
+| PDF            | @react-pdf/renderer                                  |
+| GitHub連携     | @octokit/rest                                        |
+| 認証           | Auth.js (GitHub OAuth)                               |
+| ホスティング   | Vercel                                               |
 
 ## セットアップ
 

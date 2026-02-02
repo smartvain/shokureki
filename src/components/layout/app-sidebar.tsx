@@ -30,13 +30,9 @@ const profileNav = [
   { href: "/work-history", label: "職務経歴", icon: "🏢" },
 ];
 
-const documentNav = [
-  { href: "/documents", label: "書類一覧", icon: "📄" },
-];
+const documentNav = [{ href: "/documents", label: "書類一覧", icon: "📄" }];
 
-const settingsNav = [
-  { href: "/settings", label: "設定", icon: "⚙️" },
-];
+const settingsNav = [{ href: "/settings", label: "設定", icon: "⚙️" }];
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -48,7 +44,7 @@ export function AppSidebar() {
         <Link href="/" className="text-lg font-bold">
           Shokureki
         </Link>
-        <p className="text-xs text-muted-foreground">職務経歴書管理</p>
+        <p className="text-muted-foreground text-xs">職務経歴書管理</p>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -77,7 +73,9 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith(item.href) && (item.href !== "/" || pathname === "/")}
+                    isActive={
+                      pathname.startsWith(item.href) && (item.href !== "/" || pathname === "/")
+                    }
                   >
                     <Link href={item.href}>
                       <span>{item.icon}</span>
@@ -96,10 +94,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {documentNav.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith(item.href)}
-                  >
+                  <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)}>
                     <Link href={item.href}>
                       <span>{item.icon}</span>
                       <span>{item.label}</span>
@@ -116,10 +111,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {settingsNav.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith(item.href)}
-                  >
+                  <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)}>
                     <Link href={item.href}>
                       <span>{item.icon}</span>
                       <span>{item.label}</span>
@@ -131,15 +123,15 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t p-4 space-y-1">
+      <SidebarFooter className="space-y-1 border-t p-4">
         <Button
           variant="ghost"
           size="sm"
           className="w-full justify-start"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          <Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <Sun className="size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+          <Moon className="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
           <span className="ml-1">テーマ切替</span>
         </Button>
         <Button

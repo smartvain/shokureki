@@ -7,15 +7,11 @@ import {
 
 describe("profileFormSchema", () => {
   it("accepts valid minimal data", () => {
-    expect(
-      profileFormSchema.safeParse({ lastName: "田中", firstName: "太郎" }).success
-    ).toBe(true);
+    expect(profileFormSchema.safeParse({ lastName: "田中", firstName: "太郎" }).success).toBe(true);
   });
 
   it("rejects empty lastName", () => {
-    expect(
-      profileFormSchema.safeParse({ lastName: "", firstName: "太郎" }).success
-    ).toBe(false);
+    expect(profileFormSchema.safeParse({ lastName: "", firstName: "太郎" }).success).toBe(false);
   });
 
   it("rejects invalid email", () => {
@@ -78,9 +74,7 @@ describe("skillFormSchema", () => {
   });
 
   it("rejects empty category", () => {
-    expect(
-      skillFormSchema.safeParse({ category: "", name: "TypeScript" }).success
-    ).toBe(false);
+    expect(skillFormSchema.safeParse({ category: "", name: "TypeScript" }).success).toBe(false);
   });
 
   it("accepts null yearsOfExperience", () => {

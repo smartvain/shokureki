@@ -35,7 +35,10 @@ export async function summarizeActivities(
   });
 
   // Parse JSON from response (handle markdown code blocks)
-  const jsonStr = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+  const jsonStr = text
+    .replace(/```json\n?/g, "")
+    .replace(/```\n?/g, "")
+    .trim();
   const result = JSON.parse(jsonStr) as DailySummaryResult;
 
   return result;

@@ -57,8 +57,7 @@ export default function AchievementsPage() {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingAchievement, setEditingAchievement] =
-    useState<Achievement | null>(null);
+  const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
 
   // Filters
   const [filterCategory, setFilterCategory] = useState<string>("all");
@@ -67,11 +66,9 @@ export default function AchievementsPage() {
 
   async function fetchAchievements() {
     const params = new URLSearchParams();
-    if (filterCategory && filterCategory !== "all")
-      params.set("category", filterCategory);
+    if (filterCategory && filterCategory !== "all") params.set("category", filterCategory);
     if (filterPeriod) params.set("period", filterPeriod);
-    if (filterProjectId && filterProjectId !== "all")
-      params.set("projectId", filterProjectId);
+    if (filterProjectId && filterProjectId !== "all") params.set("projectId", filterProjectId);
 
     const res = await fetch(`/api/achievements?${params}`);
     if (res.ok) setAchievements(await res.json());
@@ -160,7 +157,7 @@ export default function AchievementsPage() {
       {/* Achievement List */}
       {achievements.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
+          <CardContent className="text-muted-foreground py-12 text-center">
             実績がまだありません。ダッシュボードで活動を収集し、候補を承認してください。
           </CardContent>
         </Card>
@@ -168,28 +165,21 @@ export default function AchievementsPage() {
         <div className="space-y-4">
           {achievements.map((achievement) => (
             <Card key={achievement.id}>
-              <CardContent className="pt-6 space-y-3">
+              <CardContent className="space-y-3 pt-6">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
                     <h3 className="font-medium">{achievement.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {achievement.description}
-                    </p>
+                    <p className="text-muted-foreground text-sm">{achievement.description}</p>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-1">
                   <Badge variant="outline">
-                    {categoryLabels[achievement.category] ??
-                      achievement.category}
+                    {categoryLabels[achievement.category] ?? achievement.category}
                   </Badge>
-                  {achievement.period && (
-                    <Badge variant="secondary">{achievement.period}</Badge>
-                  )}
+                  {achievement.period && <Badge variant="secondary">{achievement.period}</Badge>}
                   {achievement.projectName && (
-                    <Badge variant="secondary">
-                      {achievement.projectName}
-                    </Badge>
+                    <Badge variant="secondary">{achievement.projectName}</Badge>
                   )}
                   {achievement.technologies?.map((tech) => (
                     <Badge key={tech} variant="secondary" className="text-xs">
@@ -199,11 +189,7 @@ export default function AchievementsPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEdit(achievement)}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => handleEdit(achievement)}>
                     編集
                   </Button>
                   <AlertDialog>
@@ -214,18 +200,12 @@ export default function AchievementsPage() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          実績を削除しますか？
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          この操作は取り消せません。
-                        </AlertDialogDescription>
+                        <AlertDialogTitle>実績を削除しますか？</AlertDialogTitle>
+                        <AlertDialogDescription>この操作は取り消せません。</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDelete(achievement.id)}
-                        >
+                        <AlertDialogAction onClick={() => handleDelete(achievement.id)}>
                           削除
                         </AlertDialogAction>
                       </AlertDialogFooter>

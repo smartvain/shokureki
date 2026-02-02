@@ -20,9 +20,9 @@ describe("projectFormSchema", () => {
   });
 
   it("rejects invalid date format", () => {
-    expect(
-      projectFormSchema.safeParse({ name: "Project", startDate: "invalid" }).success
-    ).toBe(false);
+    expect(projectFormSchema.safeParse({ name: "Project", startDate: "invalid" }).success).toBe(
+      false
+    );
   });
 
   it("accepts empty date strings", () => {

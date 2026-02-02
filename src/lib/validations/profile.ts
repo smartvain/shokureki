@@ -7,11 +7,7 @@ export const profileFormSchema = z.object({
   firstNameKana: z.string().max(50).default(""),
   birthDate: z.string().default(""),
   gender: z.string().default(""),
-  email: z
-    .string()
-    .email("有効なメールアドレスを入力してください")
-    .or(z.literal(""))
-    .default(""),
+  email: z.string().email("有効なメールアドレスを入力してください").or(z.literal("")).default(""),
   phone: z.string().max(20).default(""),
   postalCode: z
     .string()

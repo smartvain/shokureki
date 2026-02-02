@@ -187,7 +187,7 @@ export default function ProfilePage() {
           <p className="text-muted-foreground">個人情報・学歴・資格・スキルを管理します</p>
         </div>
         <Card>
-          <CardContent className="pt-6 space-y-4">
+          <CardContent className="space-y-4 pt-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-4 w-20" />
@@ -222,109 +222,181 @@ export default function ProfilePage() {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmitProfile)} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="lastName" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>姓 *</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="firstName" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>名 *</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="lastNameKana" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>せい</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="firstNameKana" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>めい</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="birthDate" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>生年月日</FormLabel>
-                        <FormControl><Input type="date" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="gender" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>性別</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>姓 *</FormLabel>
                           <FormControl>
-                            <SelectTrigger><SelectValue placeholder="選択" /></SelectTrigger>
+                            <Input {...field} />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="male">男性</SelectItem>
-                            <SelectItem value="female">女性</SelectItem>
-                            <SelectItem value="other">その他</SelectItem>
-                            <SelectItem value="prefer_not_to_say">未回答</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>名 *</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="email" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>メールアドレス</FormLabel>
-                        <FormControl><Input type="email" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
-                    <FormField control={form.control} name="phone" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>電話番号</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="lastNameKana"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>せい</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="firstNameKana"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>めい</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="postalCode" render={({ field }) => (
+                    <FormField
+                      control={form.control}
+                      name="birthDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>生年月日</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>性別</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="選択" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="male">男性</SelectItem>
+                              <SelectItem value="female">女性</SelectItem>
+                              <SelectItem value="other">その他</SelectItem>
+                              <SelectItem value="prefer_not_to_say">未回答</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>メールアドレス</FormLabel>
+                          <FormControl>
+                            <Input type="email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>電話番号</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="postalCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>郵便番号</FormLabel>
+                          <FormControl>
+                            <Input placeholder="123-4567" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
                       <FormItem>
-                        <FormLabel>郵便番号</FormLabel>
-                        <FormControl><Input placeholder="123-4567" {...field} /></FormControl>
+                        <FormLabel>住所</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
-                    )} />
-                  </div>
-                  <FormField control={form.control} name="address" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>住所</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="summary" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>職務要約</FormLabel>
-                      <FormControl><Textarea rows={3} placeholder="経歴の概要..." {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="selfIntroduction" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>自己紹介</FormLabel>
-                      <FormControl><Textarea rows={3} {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="summary"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>職務要約</FormLabel>
+                        <FormControl>
+                          <Textarea rows={3} placeholder="経歴の概要..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="selfIntroduction"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>自己紹介</FormLabel>
+                        <FormControl>
+                          <Textarea rows={3} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit" disabled={saving}>
                     {saving ? "保存中..." : "保存"}
                   </Button>
@@ -339,20 +411,25 @@ export default function ProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>学歴</CardTitle>
-              <Button size="sm" onClick={() => setEduDialogOpen(true)}>追加</Button>
+              <Button size="sm" onClick={() => setEduDialogOpen(true)}>
+                追加
+              </Button>
             </CardHeader>
             <CardContent className="space-y-3">
               {educations.length === 0 ? (
-                <p className="text-sm text-muted-foreground">学歴がまだ登録されていません。</p>
+                <p className="text-muted-foreground text-sm">学歴がまだ登録されていません。</p>
               ) : (
                 educations.map((edu) => (
-                  <div key={edu.id} className="flex items-start justify-between rounded-md border p-3">
+                  <div
+                    key={edu.id}
+                    className="flex items-start justify-between rounded-md border p-3"
+                  >
                     <div>
                       <p className="font-medium">{edu.schoolName}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {[edu.faculty, edu.degree].filter(Boolean).join(" / ")}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {[edu.startDate, edu.endDate].filter(Boolean).join(" ～ ")}
                         {edu.status && ` (${statusLabels[edu.status] || edu.status})`}
                       </p>
@@ -369,7 +446,11 @@ export default function ProfilePage() {
               )}
             </CardContent>
           </Card>
-          <EducationFormDialog open={eduDialogOpen} onOpenChange={setEduDialogOpen} onSuccess={fetchEducations} />
+          <EducationFormDialog
+            open={eduDialogOpen}
+            onOpenChange={setEduDialogOpen}
+            onSuccess={fetchEducations}
+          />
         </TabsContent>
 
         {/* Certifications */}
@@ -377,24 +458,31 @@ export default function ProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>資格</CardTitle>
-              <Button size="sm" onClick={() => setCertDialogOpen(true)}>追加</Button>
+              <Button size="sm" onClick={() => setCertDialogOpen(true)}>
+                追加
+              </Button>
             </CardHeader>
             <CardContent className="space-y-3">
               {certifications.length === 0 ? (
-                <p className="text-sm text-muted-foreground">資格がまだ登録されていません。</p>
+                <p className="text-muted-foreground text-sm">資格がまだ登録されていません。</p>
               ) : (
                 certifications.map((cert) => (
-                  <div key={cert.id} className="flex items-start justify-between rounded-md border p-3">
+                  <div
+                    key={cert.id}
+                    className="flex items-start justify-between rounded-md border p-3"
+                  >
                     <div>
                       <p className="font-medium">{cert.name}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {[cert.issuingOrganization, cert.acquiredDate].filter(Boolean).join(" / ")}
                       </p>
                     </div>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => deleteItem("/api/profile/certifications", cert.id, fetchCertifications)}
+                      onClick={() =>
+                        deleteItem("/api/profile/certifications", cert.id, fetchCertifications)
+                      }
                     >
                       削除
                     </Button>
@@ -403,7 +491,11 @@ export default function ProfilePage() {
               )}
             </CardContent>
           </Card>
-          <CertificationFormDialog open={certDialogOpen} onOpenChange={setCertDialogOpen} onSuccess={fetchCertifications} />
+          <CertificationFormDialog
+            open={certDialogOpen}
+            onOpenChange={setCertDialogOpen}
+            onSuccess={fetchCertifications}
+          />
         </TabsContent>
 
         {/* Skills */}
@@ -411,18 +503,23 @@ export default function ProfilePage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>スキル</CardTitle>
-              <Button size="sm" onClick={() => setSkillDialogOpen(true)}>追加</Button>
+              <Button size="sm" onClick={() => setSkillDialogOpen(true)}>
+                追加
+              </Button>
             </CardHeader>
             <CardContent className="space-y-4">
               {skillsList.length === 0 ? (
-                <p className="text-sm text-muted-foreground">スキルがまだ登録されていません。</p>
+                <p className="text-muted-foreground text-sm">スキルがまだ登録されていません。</p>
               ) : (
                 Object.entries(groupedSkills).map(([category, items]) => (
                   <div key={category}>
-                    <h4 className="text-sm font-medium mb-2">{category}</h4>
+                    <h4 className="mb-2 text-sm font-medium">{category}</h4>
                     <div className="space-y-2">
                       {items.map((skill) => (
-                        <div key={skill.id} className="flex items-center justify-between rounded-md border p-2">
+                        <div
+                          key={skill.id}
+                          className="flex items-center justify-between rounded-md border p-2"
+                        >
                           <div className="flex items-center gap-2">
                             <span className="text-sm">{skill.name}</span>
                             {skill.level && (
@@ -431,7 +528,7 @@ export default function ProfilePage() {
                               </Badge>
                             )}
                             {skill.yearsOfExperience != null && (
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-muted-foreground text-xs">
                                 {skill.yearsOfExperience}年
                               </span>
                             )}
@@ -451,7 +548,11 @@ export default function ProfilePage() {
               )}
             </CardContent>
           </Card>
-          <SkillFormDialog open={skillDialogOpen} onOpenChange={setSkillDialogOpen} onSuccess={fetchSkills} />
+          <SkillFormDialog
+            open={skillDialogOpen}
+            onOpenChange={setSkillDialogOpen}
+            onSuccess={fetchSkills}
+          />
         </TabsContent>
       </Tabs>
     </div>

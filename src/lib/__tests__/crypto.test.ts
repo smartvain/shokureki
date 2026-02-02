@@ -34,9 +34,7 @@ describe("encrypt/decrypt", () => {
 
   it("throws when ENCRYPTION_KEY is not set", () => {
     delete process.env.ENCRYPTION_KEY;
-    expect(() => encrypt("test")).toThrow(
-      "ENCRYPTION_KEY environment variable is not set"
-    );
+    expect(() => encrypt("test")).toThrow("ENCRYPTION_KEY environment variable is not set");
   });
 
   it("handles empty string", () => {

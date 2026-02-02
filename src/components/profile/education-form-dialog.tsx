@@ -3,12 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { educationFormSchema, type EducationFormValues } from "@/lib/validations/profile";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -40,11 +35,7 @@ const statusOptions = [
   { value: "expected", label: "卒業見込" },
 ];
 
-export function EducationFormDialog({
-  open,
-  onOpenChange,
-  onSuccess,
-}: EducationFormDialogProps) {
+export function EducationFormDialog({ open, onOpenChange, onSuccess }: EducationFormDialogProps) {
   const form = useForm<EducationFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(educationFormSchema) as any,

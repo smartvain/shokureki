@@ -22,26 +22,20 @@ describe("achievementFormSchema", () => {
   });
 
   it("rejects empty title", () => {
-    expect(
-      achievementFormSchema.safeParse({ ...validData, title: "" }).success
-    ).toBe(false);
+    expect(achievementFormSchema.safeParse({ ...validData, title: "" }).success).toBe(false);
   });
 
   it("rejects invalid category", () => {
-    expect(
-      achievementFormSchema.safeParse({ ...validData, category: "invalid" }).success
-    ).toBe(false);
+    expect(achievementFormSchema.safeParse({ ...validData, category: "invalid" }).success).toBe(
+      false
+    );
   });
 
   it("rejects invalid period format", () => {
-    expect(
-      achievementFormSchema.safeParse({ ...validData, period: "2025-1" }).success
-    ).toBe(false);
+    expect(achievementFormSchema.safeParse({ ...validData, period: "2025-1" }).success).toBe(false);
   });
 
   it("accepts empty string for period", () => {
-    expect(
-      achievementFormSchema.safeParse({ ...validData, period: "" }).success
-    ).toBe(true);
+    expect(achievementFormSchema.safeParse({ ...validData, period: "" }).success).toBe(true);
   });
 });

@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { certifications } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getAuthenticatedUserId, unauthorizedResponse, getOrCreateProfileId } from "@/lib/auth-helpers";
+import {
+  getAuthenticatedUserId,
+  unauthorizedResponse,
+  getOrCreateProfileId,
+} from "@/lib/auth-helpers";
 
 export async function GET() {
   const userId = await getAuthenticatedUserId();

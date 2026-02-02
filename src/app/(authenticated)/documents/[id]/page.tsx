@@ -110,10 +110,8 @@ export default function DocumentDetailPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{doc.title}</h1>
-          <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-muted-foreground">
-            <Badge variant="outline">
-              {formatLabels[doc.format] || doc.format}
-            </Badge>
+          <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-2 text-sm">
+            <Badge variant="outline">{formatLabels[doc.format] || doc.format}</Badge>
             <Badge variant={doc.status === "finalized" ? "default" : "secondary"}>
               {doc.status === "finalized" ? "確定" : "下書き"}
             </Badge>
@@ -137,15 +135,11 @@ export default function DocumentDetailPage() {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>書類を削除しますか？</AlertDialogTitle>
-                <AlertDialogDescription>
-                  この操作は取り消せません。
-                </AlertDialogDescription>
+                <AlertDialogDescription>この操作は取り消せません。</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
-                  削除
-                </AlertDialogAction>
+                <AlertDialogAction onClick={handleDelete}>削除</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -170,8 +164,7 @@ export default function DocumentDetailPage() {
         <CardContent className="space-y-2">
           {content.skills.map((sg, i) => (
             <div key={i} className="text-sm">
-              <span className="font-medium">{sg.category}:</span>{" "}
-              {sg.items.join(", ")}
+              <span className="font-medium">{sg.category}:</span> {sg.items.join(", ")}
             </div>
           ))}
         </CardContent>
@@ -190,14 +183,12 @@ export default function DocumentDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {wh.companyDescription && (
-              <p className="text-sm text-muted-foreground">
-                {wh.companyDescription}
-              </p>
+              <p className="text-muted-foreground text-sm">{wh.companyDescription}</p>
             )}
             {wh.projects.map((proj, j) => (
               <div key={j} className="space-y-2 rounded-md border p-3">
-                <h4 className="font-medium text-sm">{proj.name}</h4>
-                <p className="text-xs text-muted-foreground">
+                <h4 className="text-sm font-medium">{proj.name}</h4>
+                <p className="text-muted-foreground text-xs">
                   {[
                     proj.period,
                     proj.role && `担当: ${proj.role}`,
@@ -207,7 +198,7 @@ export default function DocumentDetailPage() {
                     .join(" | ")}
                 </p>
                 <p className="text-sm">{proj.description}</p>
-                <ul className="list-disc list-inside text-sm space-y-1">
+                <ul className="list-inside list-disc space-y-1 text-sm">
                   {proj.achievements.map((ach, k) => (
                     <li key={k}>{ach}</li>
                   ))}

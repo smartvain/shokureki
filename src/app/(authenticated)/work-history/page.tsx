@@ -77,7 +77,7 @@ export default function WorkHistoryPage() {
 
       {histories.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
+          <CardContent className="text-muted-foreground py-12 text-center">
             職務経歴がまだありません。
           </CardContent>
         </Card>
@@ -85,15 +85,13 @@ export default function WorkHistoryPage() {
         <div className="space-y-4">
           {histories.map((wh) => (
             <Card key={wh.id}>
-              <CardContent className="pt-6 space-y-3">
+              <CardContent className="space-y-3 pt-6">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h3 className="text-lg font-medium">{wh.companyName}</h3>
-                    <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-muted-foreground">
+                    <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-2 text-sm">
                       <span>{formatPeriod(wh.startDate, wh.endDate, wh.isCurrent)}</span>
-                      {wh.employmentType && (
-                        <Badge variant="outline">{wh.employmentType}</Badge>
-                      )}
+                      {wh.employmentType && <Badge variant="outline">{wh.employmentType}</Badge>}
                     </div>
                   </div>
                   {wh.isCurrent && <Badge>在籍中</Badge>}
@@ -106,7 +104,7 @@ export default function WorkHistoryPage() {
                 )}
 
                 {wh.companyDescription && (
-                  <p className="text-sm text-muted-foreground">{wh.companyDescription}</p>
+                  <p className="text-muted-foreground text-sm">{wh.companyDescription}</p>
                 )}
 
                 {wh.responsibilities && (
@@ -119,14 +117,14 @@ export default function WorkHistoryPage() {
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button size="sm" variant="outline">削除</Button>
+                      <Button size="sm" variant="outline">
+                        削除
+                      </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>職務経歴を削除しますか？</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          この操作は取り消せません。
-                        </AlertDialogDescription>
+                        <AlertDialogDescription>この操作は取り消せません。</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>キャンセル</AlertDialogCancel>

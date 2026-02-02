@@ -10,15 +10,10 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Shokureki</CardTitle>
-          <CardDescription>
-            業務実績を自動収集し、職務経歴書を生成するアプリ
-          </CardDescription>
+          <CardDescription>業務実績を自動収集し、職務経歴書を生成するアプリ</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button
-            className="w-full"
-            onClick={() => signIn("github", { callbackUrl: "/" })}
-          >
+          <Button className="w-full" onClick={() => signIn("github", { callbackUrl: "/" })}>
             GitHubでログイン
           </Button>
         </CardContent>

@@ -63,7 +63,9 @@ export default function ShokumukeirekishoGeneratePage() {
   const [step, setStep] = useState(0);
 
   // Step 1: Format
-  const [format, setFormat] = useState<"reverse_chronological" | "chronological" | "career_based">("reverse_chronological");
+  const [format, setFormat] = useState<"reverse_chronological" | "chronological" | "career_based">(
+    "reverse_chronological"
+  );
 
   // Step 2: Achievement selection
   const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -194,9 +196,7 @@ export default function ShokumukeirekishoGeneratePage() {
       {step === 1 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-medium">
-              実績を選択 ({selectedIds.size}件選択中)
-            </h2>
+            <h2 className="text-lg font-medium">実績を選択 ({selectedIds.size}件選択中)</h2>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={selectAll}>
                 全選択
@@ -209,7 +209,7 @@ export default function ShokumukeirekishoGeneratePage() {
 
           {achievements.length === 0 ? (
             <Card>
-              <CardContent className="py-8 text-center text-muted-foreground">
+              <CardContent className="text-muted-foreground py-8 text-center">
                 実績がありません。先に実績を登録してください。
               </CardContent>
             </Card>
@@ -225,29 +225,20 @@ export default function ShokumukeirekishoGeneratePage() {
                     <div className="flex items-start gap-3">
                       <Checkbox
                         checked={selectedIds.has(achievement.id)}
-                        onCheckedChange={() =>
-                          toggleAchievement(achievement.id)
-                        }
+                        onCheckedChange={() => toggleAchievement(achievement.id)}
                         className="mt-1"
                       />
-                      <div className="space-y-1 flex-1">
-                        <p className="font-medium text-sm">
-                          {achievement.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
+                      <div className="flex-1 space-y-1">
+                        <p className="text-sm font-medium">{achievement.title}</p>
+                        <p className="text-muted-foreground line-clamp-2 text-xs">
                           {achievement.description}
                         </p>
                         <div className="flex flex-wrap gap-1">
                           <Badge variant="outline" className="text-xs">
-                            {categoryLabels[achievement.category] ??
-                              achievement.category}
+                            {categoryLabels[achievement.category] ?? achievement.category}
                           </Badge>
                           {achievement.technologies?.map((tech) => (
-                            <Badge
-                              key={tech}
-                              variant="secondary"
-                              className="text-xs"
-                            >
+                            <Badge key={tech} variant="secondary" className="text-xs">
                               {tech}
                             </Badge>
                           ))}
@@ -264,10 +255,7 @@ export default function ShokumukeirekishoGeneratePage() {
             <Button variant="outline" onClick={() => setStep(0)}>
               戻る
             </Button>
-            <Button
-              onClick={() => setStep(2)}
-              disabled={selectedIds.size === 0}
-            >
+            <Button onClick={() => setStep(2)} disabled={selectedIds.size === 0}>
               次へ
             </Button>
           </div>
@@ -279,7 +267,7 @@ export default function ShokumukeirekishoGeneratePage() {
         <div className="space-y-4">
           <h2 className="text-lg font-medium">AI生成設定</h2>
           <Card>
-            <CardContent className="pt-6 space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div>
                 <Label>応募先企業名（任意）</Label>
                 <Input
@@ -298,12 +286,7 @@ export default function ShokumukeirekishoGeneratePage() {
                   className="mt-1"
                 />
               </div>
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={handleGenerate}
-                disabled={generating}
-              >
+              <Button className="w-full" size="lg" onClick={handleGenerate} disabled={generating}>
                 {generating ? "AI生成中..." : "職務経歴書を生成"}
               </Button>
               {error && <p className="text-sm text-red-600">{error}</p>}
@@ -330,9 +313,7 @@ export default function ShokumukeirekishoGeneratePage() {
             <CardContent>
               <Textarea
                 value={content.summary}
-                onChange={(e) =>
-                  setContent({ ...content, summary: e.target.value })
-                }
+                onChange={(e) => setContent({ ...content, summary: e.target.value })}
                 rows={4}
               />
             </CardContent>
@@ -346,8 +327,7 @@ export default function ShokumukeirekishoGeneratePage() {
             <CardContent className="space-y-2">
               {content.skills.map((sg, i) => (
                 <div key={i} className="text-sm">
-                  <span className="font-medium">{sg.category}:</span>{" "}
-                  {sg.items.join(", ")}
+                  <span className="font-medium">{sg.category}:</span> {sg.items.join(", ")}
                 </div>
               ))}
             </CardContent>
@@ -359,22 +339,18 @@ export default function ShokumukeirekishoGeneratePage() {
               <CardHeader>
                 <CardTitle className="text-base">{wh.companyName}</CardTitle>
                 <CardDescription>
-                  {[wh.period, wh.employmentType, wh.position]
-                    .filter(Boolean)
-                    .join(" | ")}
+                  {[wh.period, wh.employmentType, wh.position].filter(Boolean).join(" | ")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {wh.projects.map((proj, j) => (
                   <div key={j} className="space-y-2 rounded-md border p-3">
-                    <h4 className="font-medium text-sm">{proj.name}</h4>
-                    <p className="text-xs text-muted-foreground">
-                      {[proj.period, proj.role, proj.teamSize]
-                        .filter(Boolean)
-                        .join(" | ")}
+                    <h4 className="text-sm font-medium">{proj.name}</h4>
+                    <p className="text-muted-foreground text-xs">
+                      {[proj.period, proj.role, proj.teamSize].filter(Boolean).join(" | ")}
                     </p>
                     <p className="text-sm">{proj.description}</p>
-                    <ul className="list-disc list-inside text-sm space-y-1">
+                    <ul className="list-inside list-disc space-y-1 text-sm">
                       {proj.achievements.map((ach, k) => (
                         <li key={k}>{ach}</li>
                       ))}
@@ -400,9 +376,7 @@ export default function ShokumukeirekishoGeneratePage() {
             <CardContent>
               <Textarea
                 value={content.selfPR}
-                onChange={(e) =>
-                  setContent({ ...content, selfPR: e.target.value })
-                }
+                onChange={(e) => setContent({ ...content, selfPR: e.target.value })}
                 rows={4}
               />
             </CardContent>
@@ -422,8 +396,8 @@ export default function ShokumukeirekishoGeneratePage() {
         <div className="space-y-4">
           <h2 className="text-lg font-medium">保存</h2>
           <Card>
-            <CardContent className="pt-6 space-y-4">
-              <p className="text-sm text-muted-foreground">
+            <CardContent className="space-y-4 pt-6">
+              <p className="text-muted-foreground text-sm">
                 職務経歴書の生成が完了しました。保存方法を選択してください。
               </p>
               <div className="flex gap-4">
