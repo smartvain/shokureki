@@ -219,6 +219,43 @@ users (認証ユーザー: NextAuth管理)
 - title, description, category, technologies
 - projectId: プロジェクトへのFK
 
+### DB設計判断の理由
+
+#### 全体方針: プライバシー重視の3段階パイプライン
+
+GitHubの生データ（PRタイトル、コミットメッセージ等）はクラウドDBに保存しない方針。このため、データフローを「収集（メモリ上）→ AI処理 → 一般化済みデータのみDB保存」の3段階に設計。
+
+#### テーブル分割の理由
+
+**`dailyDigests` → `achievementCandidates` → `achievements` の3段階構造**
+- `dailyDigests`: 「いつ収集したか」を日単位で管理。1日1レコード（userId+dateのユニーク制約）で重複収集を防止。
+- `achievementCandidates`: AIが生成した実績候補。ユーザーが承認/却下するワークフローがあるため、確定実績とは別テーブルで管理。候補はダイジェストにカスケード削除で紐づく使い捨てデータ。
+- `achievements`: ユーザーが承認した確定実績。長期保存対象。`candidateId`はnullable（手動作成の実績にも対応するため）。
+
+**`profiles` 配下に `educations` / `certifications` / `skills` / `workHistories` をぶら下げる構造**
+- 職務経歴書のセクション構成（個人情報・学歴・資格・スキル・職歴）にそのまま対応。
+- `profiles.userId` にUNIQUE制約を設定し、1ユーザー1プロフィールを保証。
+- 子テーブルは全てcascade deleteで、プロフィール削除時に一括クリーンアップ。
+
+**`generatedDocuments` が `profiles` ではなく `userId` 直下**
+- 書類はプロフィールとは異なるライフサイクルを持つ（プロフィール更新と書類更新は独立）。
+- 複数書類を応募先企業・ポジション別に管理する必要があり、プロフィールに依存させると不自然。
+
+**`serviceConnections` の暗号化設計**
+- GitHubトークンを含む接続設定をJSON全体でAES-256-GCM暗号化してDB保存。
+- 暗号化キーはVercel環境変数で管理し、DB漏洩時もトークンが平文で露出しない。
+- `service`カラムで複数サービス（github/jira/linear）を1テーブルで管理し、将来の拡張に対応。
+
+#### リレーション設計の理由
+
+| リレーション | 削除時の挙動 | 理由 |
+|-------------|-------------|------|
+| `achievements.projectId` → `projects` | `SET NULL` | プロジェクトを削除しても実績は残すべき |
+| `achievements.candidateId` → `achievementCandidates` | デフォルト（制約なし） | 候補が削除されても確定実績には影響しない |
+| `educations.profileId` → `profiles` | `CASCADE` | プロフィール削除時に子データも一括削除 |
+| `dailyDigests.userId` → `users` | `CASCADE` | ユーザー削除時に関連データを全て削除 |
+| `accounts`/`sessions` → `users` | `CASCADE` | NextAuth管理のため、ユーザー削除で自動クリーンアップ |
+
 ---
 
 ## 活動収集の仕組み
