@@ -155,22 +155,18 @@ export default function DashboardPage() {
             {collecting ? "収集中・AI分析中..." : "今日の活動を収集"}
           </Button>
 
-          {error && (
-            <p className="text-sm text-red-600">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-600">{error}</p>}
 
           {result && (
-            <div className="rounded-md border bg-muted/50 p-4 space-y-2">
+            <div className="bg-muted/50 space-y-2 rounded-md border p-4">
               <p className="text-sm font-medium">
                 {result.digest.activityCount}件の活動を収集しました
               </p>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              <p className="text-muted-foreground text-sm whitespace-pre-wrap">
                 {result.digest.summary}
               </p>
               {result.candidates.length > 0 && (
-                <p className="text-sm">
-                  {result.candidates.length}件の実績候補を生成しました
-                </p>
+                <p className="text-sm">{result.candidates.length}件の実績候補を生成しました</p>
               )}
             </div>
           )}
@@ -188,24 +184,13 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {pendingCandidates.map((candidate) => (
-              <div
-                key={candidate.id}
-                className="rounded-md border p-4 space-y-3"
-              >
+              <div key={candidate.id} className="space-y-3 rounded-md border p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1">
                     <h3 className="font-medium">{candidate.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {candidate.description}
-                    </p>
+                    <p className="text-muted-foreground text-sm">{candidate.description}</p>
                   </div>
-                  <Badge
-                    variant={
-                      candidate.significance === "high"
-                        ? "default"
-                        : "secondary"
-                    }
-                  >
+                  <Badge variant={candidate.significance === "high" ? "default" : "secondary"}>
                     {candidate.significance === "high"
                       ? "重要"
                       : candidate.significance === "medium"
@@ -226,10 +211,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleCandidate(candidate.id, "accept")}
-                  >
+                  <Button size="sm" onClick={() => handleCandidate(candidate.id, "accept")}>
                     承認
                   </Button>
                   <Button
@@ -254,7 +236,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{pendingCandidates.length}</p>
-            <p className="text-xs text-muted-foreground">レビュー待ち</p>
+            <p className="text-muted-foreground text-xs">レビュー待ち</p>
           </CardContent>
         </Card>
         <Card>
@@ -263,7 +245,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{achievementCount}</p>
-            <p className="text-xs text-muted-foreground">合計</p>
+            <p className="text-muted-foreground text-xs">合計</p>
           </CardContent>
         </Card>
         <Card>
@@ -272,7 +254,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{documentCount}</p>
-            <p className="text-xs text-muted-foreground">合計</p>
+            <p className="text-muted-foreground text-xs">合計</p>
           </CardContent>
         </Card>
       </div>

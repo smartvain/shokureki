@@ -3,12 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { projectFormSchema, type ProjectFormValues } from "@/lib/validations/project";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -80,9 +75,7 @@ export function ProjectFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "プロジェクトを編集" : "プロジェクトを作成"}
-          </DialogTitle>
+          <DialogTitle>{isEditing ? "プロジェクトを編集" : "プロジェクトを作成"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -180,19 +173,11 @@ export function ProjectFormDialog({
               )}
             />
             <div className="flex justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 キャンセル
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting
-                  ? "保存中..."
-                  : isEditing
-                    ? "更新"
-                    : "作成"}
+                {form.formState.isSubmitting ? "保存中..." : isEditing ? "更新" : "作成"}
               </Button>
             </div>
           </form>

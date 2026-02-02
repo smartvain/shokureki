@@ -13,10 +13,7 @@ export async function PUT(request: Request) {
   const { repoFullName } = await request.json();
 
   const connection = await db.query.serviceConnections.findFirst({
-    where: and(
-      eq(serviceConnections.userId, userId),
-      eq(serviceConnections.service, "github")
-    ),
+    where: and(eq(serviceConnections.userId, userId), eq(serviceConnections.service, "github")),
   });
 
   if (!connection) {

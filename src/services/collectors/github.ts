@@ -15,9 +15,7 @@ interface CollectOptions {
   date: string; // YYYY-MM-DD
 }
 
-export async function collectGitHubActivities(
-  options: CollectOptions
-): Promise<RawActivity[]> {
+export async function collectGitHubActivities(options: CollectOptions): Promise<RawActivity[]> {
   const octokit = new Octokit({ auth: options.token });
   const since = `${options.date}T00:00:00Z`;
   const until = `${options.date}T23:59:59Z`;

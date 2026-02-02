@@ -6,7 +6,10 @@ export const workHistoryFormSchema = z.object({
   employmentType: z.string().max(50).default(""),
   position: z.string().max(200).default(""),
   department: z.string().max(200).default(""),
-  startDate: z.string().min(1, "開始年月は必須です").regex(/^\d{4}-\d{2}$/, "YYYY-MM形式で入力してください"),
+  startDate: z
+    .string()
+    .min(1, "開始年月は必須です")
+    .regex(/^\d{4}-\d{2}$/, "YYYY-MM形式で入力してください"),
   endDate: z
     .string()
     .regex(/^\d{4}-\d{2}$/, "YYYY-MM形式で入力してください")

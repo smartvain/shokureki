@@ -12,10 +12,7 @@ async function getProfileId(userId: string): Promise<string | null> {
   return profile?.id ?? null;
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return unauthorizedResponse();
 
@@ -51,10 +48,7 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return unauthorizedResponse();
 

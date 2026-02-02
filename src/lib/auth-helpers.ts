@@ -21,10 +21,7 @@ export async function getOrCreateProfileId(userId: string): Promise<string> {
 
   if (existing) return existing.id;
 
-  const [created] = await db
-    .insert(profiles)
-    .values({ userId })
-    .returning({ id: profiles.id });
+  const [created] = await db.insert(profiles).values({ userId }).returning({ id: profiles.id });
 
   return created.id;
 }

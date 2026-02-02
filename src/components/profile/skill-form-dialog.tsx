@@ -3,12 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { skillFormSchema, type SkillFormValues } from "@/lib/validations/profile";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -33,14 +28,7 @@ interface SkillFormDialogProps {
   onSuccess: () => void;
 }
 
-const categoryOptions = [
-  "言語",
-  "フレームワーク",
-  "ツール",
-  "データベース",
-  "インフラ",
-  "その他",
-];
+const categoryOptions = ["言語", "フレームワーク", "ツール", "データベース", "インフラ", "その他"];
 
 const levelOptions = [
   { value: "beginner", label: "初級" },
@@ -49,11 +37,7 @@ const levelOptions = [
   { value: "expert", label: "エキスパート" },
 ];
 
-export function SkillFormDialog({
-  open,
-  onOpenChange,
-  onSuccess,
-}: SkillFormDialogProps) {
+export function SkillFormDialog({ open, onOpenChange, onSuccess }: SkillFormDialogProps) {
   const form = useForm<SkillFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(skillFormSchema) as any,
@@ -163,9 +147,7 @@ export function SkillFormDialog({
                         placeholder="3"
                         value={field.value ?? ""}
                         onChange={(e) =>
-                          field.onChange(
-                            e.target.value ? Number(e.target.value) : null
-                          )
+                          field.onChange(e.target.value ? Number(e.target.value) : null)
                         }
                       />
                     </FormControl>

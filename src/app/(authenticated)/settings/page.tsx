@@ -103,17 +103,15 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>GitHub連携</CardTitle>
           <CardDescription>
-            Personal Access Tokenを設定して、GitHubの活動を収集できるようにします。
-            トークンには repo スコープが必要です。
+            Personal Access Tokenを設定して、GitHubの活動を収集できるようにします。 トークンには
+            repo スコープが必要です。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {status?.connected && (
             <div className="flex items-center gap-2">
               <Badge variant="secondary">接続済み</Badge>
-              <span className="text-sm text-muted-foreground">
-                {status.username}
-              </span>
+              <span className="text-muted-foreground text-sm">{status.username}</span>
             </div>
           )}
 
@@ -134,17 +132,15 @@ export default function SettingsPage() {
           </div>
 
           {status?.connected && (
-            <Button
-              variant="outline"
-              onClick={handleTestConnection}
-              disabled={testing}
-            >
+            <Button variant="outline" onClick={handleTestConnection} disabled={testing}>
               {testing ? "テスト中..." : "接続テスト"}
             </Button>
           )}
 
           {message && (
-            <p className={`text-sm ${message.type === "success" ? "text-green-600" : "text-red-600"}`}>
+            <p
+              className={`text-sm ${message.type === "success" ? "text-green-600" : "text-red-600"}`}
+            >
               {message.text}
             </p>
           )}
@@ -155,9 +151,7 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>対象リポジトリ</CardTitle>
-            <CardDescription>
-              活動を収集するリポジトリを選択してください
-            </CardDescription>
+            <CardDescription>活動を収集するリポジトリを選択してください</CardDescription>
           </CardHeader>
           <CardContent>
             <Input
@@ -167,21 +161,24 @@ export default function SettingsPage() {
               className="mb-3"
             />
             <div className="space-y-2">
-              {[...status.repos].filter((repo) => repo.fullName.toLowerCase().includes(repoSearch.toLowerCase())).sort((a, b) => Number(b.selected) - Number(a.selected)).map((repo) => (
-                <div
-                  key={repo.fullName}
-                  className="flex items-center justify-between rounded-md border p-3"
-                >
-                  <span className="text-sm font-medium">{repo.fullName}</span>
-                  <Button
-                    variant={repo.selected ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleToggleRepo(repo.fullName)}
+              {[...status.repos]
+                .filter((repo) => repo.fullName.toLowerCase().includes(repoSearch.toLowerCase()))
+                .sort((a, b) => Number(b.selected) - Number(a.selected))
+                .map((repo) => (
+                  <div
+                    key={repo.fullName}
+                    className="flex items-center justify-between rounded-md border p-3"
                   >
-                    {repo.selected ? "選択済み" : "選択"}
-                  </Button>
-                </div>
-              ))}
+                    <span className="text-sm font-medium">{repo.fullName}</span>
+                    <Button
+                      variant={repo.selected ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleToggleRepo(repo.fullName)}
+                    >
+                      {repo.selected ? "選択済み" : "選択"}
+                    </Button>
+                  </div>
+                ))}
             </div>
           </CardContent>
         </Card>

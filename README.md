@@ -30,18 +30,18 @@ Job Search Cycle
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript |
-| Database | PostgreSQL ([Neon](https://neon.tech)) + Drizzle ORM |
-| UI | Tailwind CSS 4 + shadcn/ui |
-| Forms | React Hook Form + Zod |
-| AI | Vercel AI SDK + OpenAI GPT-4o-mini |
-| PDF | @react-pdf/renderer |
-| GitHub | @octokit/rest |
-| Auth | Auth.js (GitHub OAuth) |
-| Hosting | Vercel |
+| Layer     | Technology                                           |
+| --------- | ---------------------------------------------------- |
+| Framework | Next.js 16 (App Router)                              |
+| Language  | TypeScript                                           |
+| Database  | PostgreSQL ([Neon](https://neon.tech)) + Drizzle ORM |
+| UI        | Tailwind CSS 4 + shadcn/ui                           |
+| Forms     | React Hook Form + Zod                                |
+| AI        | Vercel AI SDK + OpenAI GPT-4o-mini                   |
+| PDF       | @react-pdf/renderer                                  |
+| GitHub    | @octokit/rest                                        |
+| Auth      | Auth.js (GitHub OAuth)                               |
+| Hosting   | Vercel                                               |
 
 ## Getting Started
 

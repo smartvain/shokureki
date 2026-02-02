@@ -4,10 +4,7 @@ import { achievements } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { getAuthenticatedUserId, unauthorizedResponse } from "@/lib/auth-helpers";
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return unauthorizedResponse();
 
@@ -21,9 +18,13 @@ export async function PATCH(
   if (body.period !== undefined) updateData.period = body.period || null;
   if (body.projectId !== undefined) updateData.projectId = body.projectId || null;
   if (body.technologies !== undefined) {
-    updateData.technologies = typeof body.technologies === "string"
-      ? body.technologies.split(",").map((t: string) => t.trim()).filter(Boolean)
-      : body.technologies;
+    updateData.technologies =
+      typeof body.technologies === "string"
+        ? body.technologies
+            .split(",")
+            .map((t: string) => t.trim())
+            .filter(Boolean)
+        : body.technologies;
   }
 
   const [updated] = await db
@@ -39,10 +40,7 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return unauthorizedResponse();
 

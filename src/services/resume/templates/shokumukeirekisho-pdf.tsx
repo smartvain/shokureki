@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer";
 import type { ShokumukeirekishoContent } from "@/types/document";
 
 const styles = StyleSheet.create({
@@ -130,9 +123,7 @@ export function ShokumukeirekishoPDF({ content, fontUrl }: Props) {
         {content.skills.map((skillGroup, i) => (
           <View key={i} style={styles.skillRow}>
             <Text style={styles.skillCategory}>{skillGroup.category}:</Text>
-            <Text style={styles.skillItems}>
-              {skillGroup.items.join(", ")}
-            </Text>
+            <Text style={styles.skillItems}>{skillGroup.items.join(", ")}</Text>
           </View>
         ))}
 
@@ -169,9 +160,7 @@ export function ShokumukeirekishoPDF({ content, fontUrl }: Props) {
                   </Text>
                 ))}
                 {proj.technologies.length > 0 && (
-                  <Text style={styles.techRow}>
-                    技術: {proj.technologies.join(", ")}
-                  </Text>
+                  <Text style={styles.techRow}>技術: {proj.technologies.join(", ")}</Text>
                 )}
               </View>
             ))}

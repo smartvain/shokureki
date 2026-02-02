@@ -23,12 +23,7 @@ export async function GET() {
     })
     .from(achievementCandidates)
     .innerJoin(dailyDigests, eq(achievementCandidates.digestId, dailyDigests.id))
-    .where(
-      and(
-        eq(dailyDigests.userId, userId),
-        eq(achievementCandidates.status, "pending")
-      )
-    )
+    .where(and(eq(dailyDigests.userId, userId), eq(achievementCandidates.status, "pending")))
     .orderBy(desc(achievementCandidates.createdAt));
 
   return NextResponse.json(candidates);
@@ -50,12 +45,7 @@ export async function PATCH(request: Request) {
     .select()
     .from(achievementCandidates)
     .innerJoin(dailyDigests, eq(achievementCandidates.digestId, dailyDigests.id))
-    .where(
-      and(
-        eq(achievementCandidates.id, candidateId),
-        eq(dailyDigests.userId, userId)
-      )
-    )
+    .where(and(eq(achievementCandidates.id, candidateId), eq(dailyDigests.userId, userId)))
     .then((rows) => rows[0]);
 
   if (!candidate) {

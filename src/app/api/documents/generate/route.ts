@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { achievements, projects, profiles, skills, workHistories, generatedDocuments } from "@/db/schema";
+import {
+  achievements,
+  projects,
+  profiles,
+  skills,
+  workHistories,
+  generatedDocuments,
+} from "@/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { getAuthenticatedUserId, unauthorizedResponse } from "@/lib/auth-helpers";
 import { generateResume } from "@/services/resume/generator";
@@ -13,10 +20,7 @@ export async function POST(request: Request) {
   const { format, achievementIds, targetCompany, targetPosition } = body;
 
   if (!format || !achievementIds?.length) {
-    return NextResponse.json(
-      { error: "フォーマットと実績を選択してください" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "フォーマットと実績を選択してください" }, { status: 400 });
   }
 
   // Fetch user's profile
@@ -25,10 +29,7 @@ export async function POST(request: Request) {
   });
 
   if (!profile || !profile.lastName) {
-    return NextResponse.json(
-      { error: "先にプロフィールを登録してください" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "先にプロフィールを登録してください" }, { status: 400 });
   }
 
   // Fetch selected achievements with project names
@@ -43,12 +44,7 @@ export async function POST(request: Request) {
     })
     .from(achievements)
     .leftJoin(projects, eq(achievements.projectId, projects.id))
-    .where(
-      and(
-        eq(achievements.userId, userId),
-        inArray(achievements.id, achievementIds)
-      )
-    );
+    .where(and(eq(achievements.userId, userId), inArray(achievements.id, achievementIds)));
 
   // Fetch user's skills
   const userSkills = await db.query.skills.findMany({
@@ -100,9 +96,7 @@ export async function POST(request: Request) {
     });
 
     // Save to database
-    const title = targetCompany
-      ? `職務経歴書 - ${targetCompany}`
-      : "職務経歴書";
+    const title = targetCompany ? `職務経歴書 - ${targetCompany}` : "職務経歴書";
 
     const [doc] = await db
       .insert(generatedDocuments)

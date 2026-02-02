@@ -69,16 +69,14 @@ export default function ProjectsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">プロジェクト</h1>
-          <p className="text-muted-foreground">
-            実績をグループ化するプロジェクトを管理します
-          </p>
+          <p className="text-muted-foreground">実績をグループ化するプロジェクトを管理します</p>
         </div>
         <Button onClick={handleCreate}>新規作成</Button>
       </div>
 
       {projects.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
+          <CardContent className="text-muted-foreground py-12 text-center">
             プロジェクトがまだありません。
           </CardContent>
         </Card>
@@ -90,18 +88,14 @@ export default function ProjectsPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <CardTitle className="text-lg">{project.name}</CardTitle>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <div className="text-muted-foreground mt-1 flex flex-wrap items-center gap-2 text-sm">
                       {project.company && <span>{project.company}</span>}
                       {project.startDate && (
-                        <span>
-                          {formatPeriod(project.startDate, project.endDate)}
-                        </span>
+                        <span>{formatPeriod(project.startDate, project.endDate)}</span>
                       )}
                     </div>
                   </div>
-                  <Badge variant="secondary">
-                    実績 {project.achievementCount}件
-                  </Badge>
+                  <Badge variant="secondary">実績 {project.achievementCount}件</Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -109,29 +103,23 @@ export default function ProjectsPage() {
                   <div className="flex gap-4 text-sm">
                     {project.role && (
                       <span>
-                        <span className="text-muted-foreground">役割:</span>{" "}
-                        {project.role}
+                        <span className="text-muted-foreground">役割:</span> {project.role}
                       </span>
                     )}
                     {project.teamSize && (
                       <span>
-                        <span className="text-muted-foreground">規模:</span>{" "}
-                        {project.teamSize}
+                        <span className="text-muted-foreground">規模:</span> {project.teamSize}
                       </span>
                     )}
                   </div>
                 )}
                 {project.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="text-muted-foreground line-clamp-2 text-sm">
                     {project.description}
                   </p>
                 )}
                 <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEdit(project)}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => handleEdit(project)}>
                     編集
                   </Button>
                   <AlertDialog>
@@ -142,18 +130,14 @@ export default function ProjectsPage() {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          プロジェクトを削除しますか？
-                        </AlertDialogTitle>
+                        <AlertDialogTitle>プロジェクトを削除しますか？</AlertDialogTitle>
                         <AlertDialogDescription>
                           紐づいている実績のプロジェクト参照は解除されます。実績自体は削除されません。
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDelete(project.id)}
-                        >
+                        <AlertDialogAction onClick={() => handleDelete(project.id)}>
                           削除
                         </AlertDialogAction>
                       </AlertDialogFooter>

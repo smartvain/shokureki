@@ -8,20 +8,14 @@ import { ShokumukeirekishoPDF } from "@/services/resume/templates/shokumukeireki
 import type { ShokumukeirekishoContent } from "@/types/document";
 import React from "react";
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await getAuthenticatedUserId();
   if (!userId) return unauthorizedResponse();
 
   const { id } = await params;
 
   const doc = await db.query.generatedDocuments.findFirst({
-    where: and(
-      eq(generatedDocuments.id, id),
-      eq(generatedDocuments.userId, userId)
-    ),
+    where: and(eq(generatedDocuments.id, id), eq(generatedDocuments.userId, userId)),
   });
 
   if (!doc) {

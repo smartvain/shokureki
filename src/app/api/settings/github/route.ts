@@ -13,10 +13,7 @@ export async function GET() {
   if (!userId) return unauthorizedResponse();
 
   const connection = await db.query.serviceConnections.findFirst({
-    where: and(
-      eq(serviceConnections.userId, userId),
-      eq(serviceConnections.service, "github")
-    ),
+    where: and(eq(serviceConnections.userId, userId), eq(serviceConnections.service, "github")),
   });
 
   if (!connection) {
@@ -71,10 +68,7 @@ export async function POST(request: Request) {
 
     // Upsert connection
     const existing = await db.query.serviceConnections.findFirst({
-      where: and(
-        eq(serviceConnections.userId, userId),
-        eq(serviceConnections.service, "github")
-      ),
+      where: and(eq(serviceConnections.userId, userId), eq(serviceConnections.service, "github")),
     });
 
     if (existing) {
@@ -115,7 +109,9 @@ export async function POST(request: Request) {
         case 403:
           if (error.response?.headers?.["x-ratelimit-remaining"] === "0") {
             return NextResponse.json(
-              { error: "GitHub APIのレート制限に達しました。しばらく待ってから再試行してください。" },
+              {
+                error: "GitHub APIのレート制限に達しました。しばらく待ってから再試行してください。",
+              },
               { status: 429 }
             );
           }

@@ -14,9 +14,7 @@ export function buildDailySummaryPrompt(activities: RawActivity[], manualNotes?:
     })
     .join("\n\n");
 
-  const manualSection = manualNotes
-    ? `\n\n## 手動メモ\n${manualNotes}`
-    : "";
+  const manualSection = manualNotes ? `\n\n## 手動メモ\n${manualNotes}` : "";
 
   return `あなたは職務経歴書作成のアシスタントです。
 エンジニアの1日の活動データを分析し、職務経歴書に記載できる実績候補を抽出してください。

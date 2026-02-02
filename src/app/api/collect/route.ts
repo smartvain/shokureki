@@ -44,10 +44,7 @@ export async function POST(request: Request) {
 
   // Create or update daily digest
   let digest = await db.query.dailyDigests.findFirst({
-    where: and(
-      eq(dailyDigests.userId, userId),
-      eq(dailyDigests.date, targetDate)
-    ),
+    where: and(eq(dailyDigests.userId, userId), eq(dailyDigests.date, targetDate)),
   });
 
   if (!digest) {
