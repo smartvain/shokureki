@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const [testing, setTesting] = useState(false);
   const [status, setStatus] = useState<ConnectionStatus | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [repoSearch, setRepoSearch] = useState("");
 
   useEffect(() => {
     fetchStatus();
@@ -159,8 +160,14 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <Input
+              placeholder="リポジトリを検索..."
+              value={repoSearch}
+              onChange={(e) => setRepoSearch(e.target.value)}
+              className="mb-3"
+            />
             <div className="space-y-2">
-              {status.repos.map((repo) => (
+              {[...status.repos].filter((repo) => repo.fullName.toLowerCase().includes(repoSearch.toLowerCase())).sort((a, b) => Number(b.selected) - Number(a.selected)).map((repo) => (
                 <div
                   key={repo.fullName}
                   className="flex items-center justify-between rounded-md border p-3"
