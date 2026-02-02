@@ -5,6 +5,7 @@ import { eq, and } from "drizzle-orm";
 import { encrypt, decrypt } from "@/lib/crypto";
 import { getAuthenticatedUserId, unauthorizedResponse } from "@/lib/auth-helpers";
 import { Octokit } from "@octokit/rest";
+import { RequestError } from "@octokit/request-error";
 
 // GET: Fetch GitHub connection status
 export async function GET() {
@@ -103,10 +104,39 @@ export async function POST(request: Request) {
         selected: r.selected,
       })),
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof RequestError) {
+      switch (error.status) {
+        case 401:
+          return NextResponse.json(
+            { error: "無効なトークンです。トークンが正しいか確認してください。" },
+            { status: 400 }
+          );
+        case 403:
+          if (error.response?.headers?.["x-ratelimit-remaining"] === "0") {
+            return NextResponse.json(
+              { error: "GitHub APIのレート制限に達しました。しばらく待ってから再試行してください。" },
+              { status: 429 }
+            );
+          }
+          return NextResponse.json(
+            { error: "repo スコープが付与されていません。トークンの権限を確認してください。" },
+            { status: 400 }
+          );
+        default:
+          if (error.status >= 500) {
+            return NextResponse.json(
+              { error: "GitHub側でエラーが発生しています。しばらく待ってから再試行してください。" },
+              { status: 502 }
+            );
+          }
+      }
+    }
+
+    console.error("GitHub token validation error:", error);
     return NextResponse.json(
-      { error: "無効なトークンです。repo スコープが付与されているか確認してください。" },
-      { status: 400 }
+      { error: "GitHubとの通信に失敗しました。ネットワーク接続を確認して再試行してください。" },
+      { status: 500 }
     );
   }
 }
