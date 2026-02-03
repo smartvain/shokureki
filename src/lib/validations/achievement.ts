@@ -15,7 +15,7 @@ export const achievementFormSchema = z.object({
   technologies: z.string().default(""), // comma-separated, parsed on submit
   period: z
     .string()
-    .regex(/^\d{4}-\d{2}$/, "YYYY-MM形式で入力してください")
+    .regex(/^\d{4}-\d{2}(-\d{2})?$/, "YYYY-MM または YYYY-MM-DD 形式で入力してください")
     .or(z.literal(""))
     .default(""),
   projectId: z.string().uuid().nullable().default(null),

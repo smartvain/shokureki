@@ -159,7 +159,7 @@ export function AchievementFormDialog({
                   <FormItem>
                     <FormLabel>期間</FormLabel>
                     <FormControl>
-                      <Input placeholder="2024-01" {...field} />
+                      <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -43,6 +43,18 @@ interface Project {
   name: string;
 }
 
+function formatPeriod(period: string): string {
+  // "2025-11-13" → "2025年11月13日", "2025-11" → "2025年11月"
+  const parts = period.split("-");
+  if (parts.length === 3) {
+    return `${parts[0]}年${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+  }
+  if (parts.length === 2) {
+    return `${parts[0]}年${parseInt(parts[1])}月`;
+  }
+  return period;
+}
+
 const categoryLabels: Record<string, string> = {
   development: "開発",
   review: "レビュー",
@@ -177,7 +189,9 @@ export default function AchievementsPage() {
                   <Badge variant="outline">
                     {categoryLabels[achievement.category] ?? achievement.category}
                   </Badge>
-                  {achievement.period && <Badge variant="secondary">{achievement.period}</Badge>}
+                  {achievement.period && (
+                    <Badge variant="secondary">{formatPeriod(achievement.period)}</Badge>
+                  )}
                   {achievement.projectName && (
                     <Badge variant="secondary">{achievement.projectName}</Badge>
                   )}
