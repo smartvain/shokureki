@@ -4,18 +4,30 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
+
+function getToday() {
+  return new Date().toISOString().split("T")[0];
+}
 
 interface Candidate {
   id: string;
   title: string;
   description: string;
+  repoRole: string | null;
   category: string;
   technologies: string[] | null;
   significance: string;
   status: string;
   digestDate: string;
+}
+
+interface RepoSummary {
+  repoRole: string;
+  summary: string;
 }
 
 interface CollectResult {
@@ -24,6 +36,7 @@ interface CollectResult {
     date: string;
     activityCount: number;
     summary: string;
+    repoSummaries: RepoSummary[];
     status: string;
   };
   candidates: Candidate[];
@@ -32,12 +45,17 @@ interface CollectResult {
 export default function DashboardPage() {
   const { data: session } = useSession();
   const [collecting, setCollecting] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(getToday);
   const [manualNotes, setManualNotes] = useState("");
   const [result, setResult] = useState<CollectResult | null>(null);
   const [pendingCandidates, setPendingCandidates] = useState<Candidate[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [achievementCount, setAchievementCount] = useState<number>(0);
   const [documentCount, setDocumentCount] = useState<number>(0);
+  const [processingCandidate, setProcessingCandidate] = useState<{
+    id: string;
+    action: "accept" | "reject";
+  } | null>(null);
 
   async function fetchCandidates() {
     const res = await fetch("/api/candidates");
@@ -67,6 +85,15 @@ export default function DashboardPage() {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    if (!collecting) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [collecting]);
+
   async function handleCollect() {
     setCollecting(true);
     setError(null);
@@ -77,7 +104,7 @@ export default function DashboardPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          date: new Date().toISOString().split("T")[0],
+          date: selectedDate,
           manualNotes: manualNotes || undefined,
         }),
       });
@@ -99,14 +126,20 @@ export default function DashboardPage() {
   }
 
   async function handleCandidate(candidateId: string, action: "accept" | "reject") {
-    const res = await fetch("/api/candidates", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ candidateId, action }),
-    });
+    setProcessingCandidate({ id: candidateId, action });
+    try {
+      const res = await fetch("/api/candidates", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ candidateId, action }),
+      });
 
-    if (res.ok) {
-      await fetchCandidates();
+      if (res.ok) {
+        await fetchCandidates();
+        await fetchStats();
+      }
+    } finally {
+      setProcessingCandidate(null);
     }
   }
 
@@ -133,13 +166,23 @@ export default function DashboardPage() {
       {/* Collect Section */}
       <Card>
         <CardHeader>
-          <CardTitle>今日の活動を収集</CardTitle>
+          <CardTitle>活動を収集</CardTitle>
           <CardDescription>
             GitHubの活動を自動収集し、AIが実績候補を生成します。
             手動メモ（議事録等）があればペーストしてください。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium whitespace-nowrap">収集日</span>
+            <Input
+              type="date"
+              value={selectedDate}
+              max={getToday()}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-auto"
+            />
+          </div>
           <Textarea
             placeholder="手動メモ（オプション）：会議議事録、Slackで共有した内容など..."
             value={manualNotes}
@@ -152,16 +195,44 @@ export default function DashboardPage() {
             onClick={handleCollect}
             disabled={collecting}
           >
-            {collecting ? "収集中・AI分析中..." : "今日の活動を収集"}
+            {collecting
+              ? "収集中・AI分析中..."
+              : selectedDate === getToday()
+                ? "今日の活動を収集"
+                : `${selectedDate} の活動を収集`}
           </Button>
+
+          {collecting && (
+            <div className="bg-muted/50 animate-pulse space-y-3 rounded-md border p-4">
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <div>
+                  <p className="text-sm font-medium">GitHubから活動を収集しています...</p>
+                  <p className="text-muted-foreground text-xs">
+                    収集完了後、AIが実績候補を生成します。このページを離れないでください。
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           {result && (
-            <div className="bg-muted/50 space-y-2 rounded-md border p-4">
+            <div className="bg-muted/50 space-y-3 rounded-md border p-4">
               <p className="text-sm font-medium">
                 {result.digest.activityCount}件の活動を収集しました
               </p>
+              {result.digest.repoSummaries?.length > 0 && (
+                <div className="space-y-2">
+                  {result.digest.repoSummaries.map((repo, i) => (
+                    <div key={i} className="bg-background rounded-md border p-3">
+                      <p className="text-sm font-medium">{repo.repoRole}</p>
+                      <p className="text-muted-foreground text-sm">{repo.summary}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
               <p className="text-muted-foreground text-sm whitespace-pre-wrap">
                 {result.digest.summary}
               </p>
@@ -200,6 +271,11 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-1">
+                  {candidate.repoRole && (
+                    <Badge variant="outline" className="border-blue-500/30 text-blue-400">
+                      {candidate.repoRole}
+                    </Badge>
+                  )}
                   <Badge variant="outline">
                     {categoryLabels[candidate.category] || candidate.category}
                   </Badge>
@@ -211,15 +287,30 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => handleCandidate(candidate.id, "accept")}>
-                    承認
+                  <Button
+                    size="sm"
+                    onClick={() => handleCandidate(candidate.id, "accept")}
+                    disabled={processingCandidate?.id === candidate.id}
+                  >
+                    {processingCandidate?.id === candidate.id &&
+                    processingCandidate.action === "accept" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "承認"
+                    )}
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => handleCandidate(candidate.id, "reject")}
+                    disabled={processingCandidate?.id === candidate.id}
                   >
-                    スキップ
+                    {processingCandidate?.id === candidate.id &&
+                    processingCandidate.action === "reject" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "スキップ"
+                    )}
                   </Button>
                 </div>
               </div>

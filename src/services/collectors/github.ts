@@ -17,8 +17,6 @@ interface CollectOptions {
 
 export async function collectGitHubActivities(options: CollectOptions): Promise<RawActivity[]> {
   const octokit = new Octokit({ auth: options.token });
-  const since = `${options.date}T00:00:00Z`;
-  const until = `${options.date}T23:59:59Z`;
   const activities: RawActivity[] = [];
 
   const { data: user } = await octokit.users.getAuthenticated();
@@ -28,15 +26,15 @@ export async function collectGitHubActivities(options: CollectOptions): Promise<
     const [owner, repo] = repoFullName.split("/");
 
     // Collect merged PRs authored by user
-    const prs = await collectMergedPRs(octokit, owner, repo, username, since, until);
+    const prs = await collectMergedPRs(octokit, owner, repo, username, options.date);
     activities.push(...prs);
 
     // Collect PRs reviewed by user
-    const reviews = await collectReviewedPRs(octokit, owner, repo, username, since, until);
+    const reviews = await collectReviewedPRs(octokit, owner, repo, username, options.date);
     activities.push(...reviews);
 
     // Collect closed issues
-    const issues = await collectClosedIssues(octokit, owner, repo, username, since, until);
+    const issues = await collectClosedIssues(octokit, owner, repo, username, options.date);
     activities.push(...issues);
   }
 
@@ -48,39 +46,29 @@ async function collectMergedPRs(
   owner: string,
   repo: string,
   username: string,
-  since: string,
-  until: string
+  date: string
 ): Promise<RawActivity[]> {
   try {
-    const { data: prs } = await octokit.pulls.list({
-      owner,
-      repo,
-      state: "closed",
+    const q = `repo:${owner}/${repo} type:pr author:${username} is:merged merged:${date}`;
+    const { data } = await octokit.search.issuesAndPullRequests({
+      q,
+      per_page: 100,
       sort: "updated",
-      direction: "desc",
-      per_page: 50,
+      order: "desc",
     });
 
-    return prs
-      .filter(
-        (pr) =>
-          pr.merged_at &&
-          pr.merged_at >= since &&
-          pr.merged_at <= until &&
-          pr.user?.login === username
-      )
-      .map((pr) => ({
-        source: "github" as const,
-        activityType: "pr_merged" as const,
-        title: pr.title,
-        body: pr.body || "",
-        externalUrl: pr.html_url,
-        metadata: {
-          number: pr.number,
-          repo: `${owner}/${repo}`,
-          labels: pr.labels.map((l) => l.name),
-        },
-      }));
+    return data.items.map((item) => ({
+      source: "github" as const,
+      activityType: "pr_merged" as const,
+      title: item.title,
+      body: item.body || "",
+      externalUrl: item.html_url,
+      metadata: {
+        number: item.number,
+        repo: `${owner}/${repo}`,
+        labels: item.labels.map((l) => l.name),
+      },
+    }));
   } catch {
     return [];
   }
@@ -91,30 +79,27 @@ async function collectReviewedPRs(
   owner: string,
   repo: string,
   username: string,
-  since: string,
-  until: string
+  date: string
 ): Promise<RawActivity[]> {
   try {
-    const { data: prs } = await octokit.pulls.list({
-      owner,
-      repo,
-      state: "all",
+    const q = `repo:${owner}/${repo} type:pr reviewed-by:${username} -author:${username} updated:${date}`;
+    const { data } = await octokit.search.issuesAndPullRequests({
+      q,
+      per_page: 100,
       sort: "updated",
-      direction: "desc",
-      per_page: 50,
+      order: "desc",
     });
 
     const reviewed: RawActivity[] = [];
+    const since = `${date}T00:00:00Z`;
+    const until = `${date}T23:59:59Z`;
 
-    for (const pr of prs) {
-      if (pr.user?.login === username) continue; // Skip own PRs
-      if (pr.updated_at < since || pr.updated_at > until) continue;
-
+    for (const item of data.items) {
       try {
         const { data: reviews } = await octokit.pulls.listReviews({
           owner,
           repo,
-          pull_number: pr.number,
+          pull_number: item.number,
         });
 
         const userReviews = reviews.filter(
@@ -129,11 +114,11 @@ async function collectReviewedPRs(
           reviewed.push({
             source: "github",
             activityType: "pr_reviewed",
-            title: `Review: ${pr.title}`,
+            title: `Review: ${item.title}`,
             body: userReviews.map((r) => r.body || "").join("\n"),
-            externalUrl: pr.html_url,
+            externalUrl: item.html_url,
             metadata: {
-              number: pr.number,
+              number: item.number,
               repo: `${owner}/${repo}`,
               reviewCount: userReviews.length,
               states: userReviews.map((r) => r.state),
@@ -156,39 +141,29 @@ async function collectClosedIssues(
   owner: string,
   repo: string,
   username: string,
-  since: string,
-  until: string
+  date: string
 ): Promise<RawActivity[]> {
   try {
-    const { data: issues } = await octokit.issues.listForRepo({
-      owner,
-      repo,
-      state: "closed",
-      assignee: username,
-      since,
+    const q = `repo:${owner}/${repo} type:issue assignee:${username} is:closed closed:${date}`;
+    const { data } = await octokit.search.issuesAndPullRequests({
+      q,
+      per_page: 100,
       sort: "updated",
-      direction: "desc",
-      per_page: 50,
+      order: "desc",
     });
 
-    return issues
-      .filter(
-        (issue) =>
-          !issue.pull_request && // Exclude PRs
-          issue.closed_at &&
-          issue.closed_at >= since &&
-          issue.closed_at <= until
-      )
-      .map((issue) => ({
+    return data.items
+      .filter((item) => !item.pull_request)
+      .map((item) => ({
         source: "github" as const,
         activityType: "issue_closed" as const,
-        title: issue.title,
-        body: issue.body || "",
-        externalUrl: issue.html_url,
+        title: item.title,
+        body: item.body || "",
+        externalUrl: item.html_url,
         metadata: {
-          number: issue.number,
+          number: item.number,
           repo: `${owner}/${repo}`,
-          labels: issue.labels.map((l) => (typeof l === "string" ? l : l.name || "")),
+          labels: item.labels.map((l) => (typeof l === "string" ? l : l.name || "")),
         },
       }));
   } catch {

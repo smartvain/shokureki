@@ -14,6 +14,7 @@ export async function GET() {
       id: achievementCandidates.id,
       title: achievementCandidates.title,
       description: achievementCandidates.description,
+      repoRole: achievementCandidates.repoRole,
       category: achievementCandidates.category,
       technologies: achievementCandidates.technologies,
       significance: achievementCandidates.significance,
@@ -74,7 +75,7 @@ export async function PATCH(request: Request) {
       description,
       category: candidate.achievement_candidates.category,
       technologies: candidate.achievement_candidates.technologies,
-      period: candidate.daily_digests.date.slice(0, 7), // YYYY-MM
+      period: candidate.daily_digests.date, // YYYY-MM-DD
     })
     .returning();
 
