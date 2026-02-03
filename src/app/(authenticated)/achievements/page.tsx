@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -200,8 +200,21 @@ export default function AchievementsPage() {
 
       {/* Achievement List */}
       {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="space-y-3 pt-6">
+                <Skeleton className="h-5 w-48" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex gap-1">
+                  <Skeleton className="h-5 w-12 rounded-full" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       ) : achievements.length === 0 ? (
         <Card>
