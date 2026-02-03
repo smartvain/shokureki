@@ -78,6 +78,7 @@ export const dailyDigests = pgTable(
     date: text("date").notNull(), // YYYY-MM-DD
     activityCount: integer("activity_count").notNull().default(0),
     summaryText: text("summary_text"),
+    repoSummaries: json("repo_summaries").$type<{ repoRole: string; summary: string }[]>(),
     status: text("status").notNull().default("collecting"), // "collecting" | "summarizing" | "ready" | "reviewed"
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -96,6 +97,7 @@ export const achievementCandidates = pgTable("achievement_candidates", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(), // "development" | "review" | "bugfix" | "design" | "documentation" | "communication" | "leadership"
+  repoRole: text("repo_role"),
   technologies: json("technologies").$type<string[]>().default([]),
   significance: text("significance").notNull().default("medium"), // "high" | "medium" | "low"
   status: text("status").notNull().default("pending"), // "pending" | "accepted" | "rejected" | "edited"

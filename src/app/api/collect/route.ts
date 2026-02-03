@@ -78,6 +78,7 @@ export async function POST(request: Request) {
       .update(dailyDigests)
       .set({
         summaryText: result.dailySummary,
+        repoSummaries: result.repoSummaries,
         status: "ready",
         updatedAt: new Date(),
       })
@@ -92,6 +93,7 @@ export async function POST(request: Request) {
           digestId: digest.id,
           title: candidate.title,
           description: candidate.description,
+          repoRole: candidate.repoRole || null,
           category: candidate.category,
           technologies: candidate.technologies,
           significance: candidate.significance,
@@ -107,6 +109,7 @@ export async function POST(request: Request) {
         date: targetDate,
         activityCount: activities.length,
         summary: result.dailySummary,
+        repoSummaries: result.repoSummaries,
         status: "ready",
       },
       candidates,

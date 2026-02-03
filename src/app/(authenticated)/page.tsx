@@ -11,11 +11,17 @@ interface Candidate {
   id: string;
   title: string;
   description: string;
+  repoRole: string | null;
   category: string;
   technologies: string[] | null;
   significance: string;
   status: string;
   digestDate: string;
+}
+
+interface RepoSummary {
+  repoRole: string;
+  summary: string;
 }
 
 interface CollectResult {
@@ -24,6 +30,7 @@ interface CollectResult {
     date: string;
     activityCount: number;
     summary: string;
+    repoSummaries: RepoSummary[];
     status: string;
   };
   candidates: Candidate[];
@@ -158,10 +165,20 @@ export default function DashboardPage() {
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           {result && (
-            <div className="bg-muted/50 space-y-2 rounded-md border p-4">
+            <div className="bg-muted/50 space-y-3 rounded-md border p-4">
               <p className="text-sm font-medium">
                 {result.digest.activityCount}件の活動を収集しました
               </p>
+              {result.digest.repoSummaries?.length > 0 && (
+                <div className="space-y-2">
+                  {result.digest.repoSummaries.map((repo, i) => (
+                    <div key={i} className="bg-background rounded-md border p-3">
+                      <p className="text-sm font-medium">{repo.repoRole}</p>
+                      <p className="text-muted-foreground text-sm">{repo.summary}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
               <p className="text-muted-foreground text-sm whitespace-pre-wrap">
                 {result.digest.summary}
               </p>
@@ -200,6 +217,11 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-1">
+                  {candidate.repoRole && (
+                    <Badge variant="outline" className="border-blue-500/30 text-blue-400">
+                      {candidate.repoRole}
+                    </Badge>
+                  )}
                   <Badge variant="outline">
                     {categoryLabels[candidate.category] || candidate.category}
                   </Badge>

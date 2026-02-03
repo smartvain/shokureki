@@ -24,11 +24,16 @@ export function buildDailySummaryPrompt(activities: RawActivity[], manualNotes?:
    - 例: "Project Phoenix" → "社内基幹システム刷新プロジェクト"
    - 例: "JIRA-1234" → 削除
    - 例: "hogehoge-service" → "マイクロサービス"
-2. **構造**: 「何を」「どのように」「どんな成果/インパクト」の構造で記述
-3. **技術キーワード**: プログラミング言語、フレームワーク名は具体的に残す
-4. **除外**: typo修正、README更新等の些末な活動は除外
-5. **統合**: 関連する活動は1つの実績にまとめる
-6. **言語**: 日本語で出力
+2. **リポジトリの役割表記**: リポジトリ名はそのまま使わず、そのリポジトリの役割を一般化した名前に置き換えてください
+   - 例: "acme/frontend-web" → "求人マッチングWebフロントエンド"
+   - 例: "acme/api-rails" → "求人マッチングAPIサーバー"
+   - 例: "acme/mobile-app" → "モバイルアプリ"
+   - リポジトリ名や活動内容から、そのリポジトリが担うサービス上の役割を推測してください
+3. **構造**: 「何を」「どのように」「どんな成果/インパクト」の構造で記述
+4. **技術キーワード**: プログラミング言語、フレームワーク名は具体的に残す
+5. **除外**: typo修正、README更新等の些末な活動は除外
+6. **統合**: 同一リポジトリ内の関連する活動は1つの実績にまとめる
+7. **言語**: 日本語で出力
 
 ## 活動データ
 ${activityList}${manualSection}
@@ -37,10 +42,17 @@ ${activityList}${manualSection}
 以下のJSON形式で出力してください:
 {
   "dailySummary": "今日の活動の概要（3-5行の日本語テキスト）",
+  "repoSummaries": [
+    {
+      "repoRole": "リポジトリの役割を一般化した名前（例: 求人マッチングWebフロントエンド）",
+      "summary": "そのリポジトリでの活動概要（1-2文）"
+    }
+  ],
   "achievementCandidates": [
     {
       "title": "実績の短いタイトル（20文字以内）",
       "description": "職務経歴書に記載できる形式の実績文（2-3文）",
+      "repoRole": "この実績に関連するリポジトリの役割名（repoSummariesのrepoRoleと一致させる）",
       "category": "development | review | bugfix | design | documentation | communication | leadership",
       "technologies": ["React", "TypeScript"],
       "significance": "high | medium | low"
@@ -48,5 +60,5 @@ ${activityList}${manualSection}
   ]
 }
 
-活動がない場合や実績にならない些末な内容のみの場合は、achievementCandidatesを空配列にしてください。`;
+活動がない場合や実績にならない些末な内容のみの場合は、achievementCandidatesを空配列、repoSummariesも空配列にしてください。`;
 }

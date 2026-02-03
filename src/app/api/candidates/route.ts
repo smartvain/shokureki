@@ -14,6 +14,7 @@ export async function GET() {
       id: achievementCandidates.id,
       title: achievementCandidates.title,
       description: achievementCandidates.description,
+      repoRole: achievementCandidates.repoRole,
       category: achievementCandidates.category,
       technologies: achievementCandidates.technologies,
       significance: achievementCandidates.significance,

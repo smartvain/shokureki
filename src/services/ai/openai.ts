@@ -3,9 +3,15 @@ import { openai } from "@ai-sdk/openai";
 import type { RawActivity } from "@/services/collectors/github";
 import { buildDailySummaryPrompt } from "./prompts";
 
+export interface RepoSummaryResult {
+  repoRole: string;
+  summary: string;
+}
+
 export interface AchievementCandidateResult {
   title: string;
   description: string;
+  repoRole?: string;
   category: string;
   technologies: string[];
   significance: "high" | "medium" | "low";
@@ -13,6 +19,7 @@ export interface AchievementCandidateResult {
 
 export interface DailySummaryResult {
   dailySummary: string;
+  repoSummaries: RepoSummaryResult[];
   achievementCandidates: AchievementCandidateResult[];
 }
 
@@ -23,6 +30,7 @@ export async function summarizeActivities(
   if (activities.length === 0 && !manualNotes) {
     return {
       dailySummary: "今日の活動データがありません。",
+      repoSummaries: [],
       achievementCandidates: [],
     };
   }
