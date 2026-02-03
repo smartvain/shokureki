@@ -85,6 +85,15 @@ export default function DashboardPage() {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    if (!collecting) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [collecting]);
+
   async function handleCollect() {
     setCollecting(true);
     setError(null);
