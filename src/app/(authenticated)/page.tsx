@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
 
 interface Candidate {
   id: string;
@@ -45,6 +46,10 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [achievementCount, setAchievementCount] = useState<number>(0);
   const [documentCount, setDocumentCount] = useState<number>(0);
+  const [processingCandidate, setProcessingCandidate] = useState<{
+    id: string;
+    action: "accept" | "reject";
+  } | null>(null);
 
   async function fetchCandidates() {
     const res = await fetch("/api/candidates");
@@ -106,14 +111,20 @@ export default function DashboardPage() {
   }
 
   async function handleCandidate(candidateId: string, action: "accept" | "reject") {
-    const res = await fetch("/api/candidates", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ candidateId, action }),
-    });
+    setProcessingCandidate({ id: candidateId, action });
+    try {
+      const res = await fetch("/api/candidates", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ candidateId, action }),
+      });
 
-    if (res.ok) {
-      await fetchCandidates();
+      if (res.ok) {
+        await fetchCandidates();
+        await fetchStats();
+      }
+    } finally {
+      setProcessingCandidate(null);
     }
   }
 
@@ -233,15 +244,30 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => handleCandidate(candidate.id, "accept")}>
-                    承認
+                  <Button
+                    size="sm"
+                    onClick={() => handleCandidate(candidate.id, "accept")}
+                    disabled={processingCandidate?.id === candidate.id}
+                  >
+                    {processingCandidate?.id === candidate.id &&
+                    processingCandidate.action === "accept" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "承認"
+                    )}
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => handleCandidate(candidate.id, "reject")}
+                    disabled={processingCandidate?.id === candidate.id}
                   >
-                    スキップ
+                    {processingCandidate?.id === candidate.id &&
+                    processingCandidate.action === "reject" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "スキップ"
+                    )}
                   </Button>
                 </div>
               </div>
