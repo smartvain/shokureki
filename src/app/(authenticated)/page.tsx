@@ -202,6 +202,20 @@ export default function DashboardPage() {
                 : `${selectedDate} の活動を収集`}
           </Button>
 
+          {collecting && (
+            <div className="bg-muted/50 animate-pulse space-y-3 rounded-md border p-4">
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <div>
+                  <p className="text-sm font-medium">GitHubから活動を収集しています...</p>
+                  <p className="text-muted-foreground text-xs">
+                    収集完了後、AIが実績候補を生成します。このページを離れないでください。
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           {result && (
