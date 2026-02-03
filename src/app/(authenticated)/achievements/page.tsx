@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -91,6 +92,7 @@ const categoryLabels: Record<string, string> = {
 export default function AchievementsPage() {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
 
@@ -107,6 +109,7 @@ export default function AchievementsPage() {
 
     const res = await fetch(`/api/achievements?${params}`);
     if (res.ok) setAchievements(await res.json());
+    setLoading(false);
   }
 
   async function fetchProjects() {
@@ -196,7 +199,11 @@ export default function AchievementsPage() {
       </div>
 
       {/* Achievement List */}
-      {achievements.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+        </div>
+      ) : achievements.length === 0 ? (
         <Card>
           <CardContent className="text-muted-foreground py-12 text-center">
             実績がまだありません。ダッシュボードで活動を収集し、候補を承認してください。
