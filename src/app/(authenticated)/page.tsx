@@ -4,9 +4,14 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
+
+function getToday() {
+  return new Date().toISOString().split("T")[0];
+}
 
 interface Candidate {
   id: string;
@@ -40,6 +45,7 @@ interface CollectResult {
 export default function DashboardPage() {
   const { data: session } = useSession();
   const [collecting, setCollecting] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(getToday);
   const [manualNotes, setManualNotes] = useState("");
   const [result, setResult] = useState<CollectResult | null>(null);
   const [pendingCandidates, setPendingCandidates] = useState<Candidate[]>([]);
@@ -89,7 +95,7 @@ export default function DashboardPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          date: new Date().toISOString().split("T")[0],
+          date: selectedDate,
           manualNotes: manualNotes || undefined,
         }),
       });
@@ -151,13 +157,23 @@ export default function DashboardPage() {
       {/* Collect Section */}
       <Card>
         <CardHeader>
-          <CardTitle>今日の活動を収集</CardTitle>
+          <CardTitle>活動を収集</CardTitle>
           <CardDescription>
             GitHubの活動を自動収集し、AIが実績候補を生成します。
             手動メモ（議事録等）があればペーストしてください。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium whitespace-nowrap">収集日</span>
+            <Input
+              type="date"
+              value={selectedDate}
+              max={getToday()}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-auto"
+            />
+          </div>
           <Textarea
             placeholder="手動メモ（オプション）：会議議事録、Slackで共有した内容など..."
             value={manualNotes}
@@ -170,7 +186,11 @@ export default function DashboardPage() {
             onClick={handleCollect}
             disabled={collecting}
           >
-            {collecting ? "収集中・AI分析中..." : "今日の活動を収集"}
+            {collecting
+              ? "収集中・AI分析中..."
+              : selectedDate === getToday()
+                ? "今日の活動を収集"
+                : `${selectedDate} の活動を収集`}
           </Button>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
